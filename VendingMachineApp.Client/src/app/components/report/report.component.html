@@ -1,0 +1,152 @@
+<form #vendingForm="ngForm" (ngSubmit)="submitForm()">
+  <div style="max-width: 1000px; margin: 0 auto; margin-top: 10px">
+    <!-- request report form-->
+    <div class="card">
+      <div class="card-header">
+        <div class="my-card-contact">
+          <i
+            class="bi bi-exclamation-triangle"
+            style="color: rgb(40, 167, 69)"
+          ></i>
+          Receive Purchase Reports based on your purchase behavior. ... .. .
+        </div>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">Request Order History Report</h5>
+        <br />
+
+        <!-- Item Dropdown -->
+        <div class="container">
+          <div class="d-flex justify-content-center">
+            <div class="form-group col-md-6">
+              <label
+                class="form-label form-label-top form-label-auto"
+                for="itemName"
+                >Select Item</label
+              >
+              <select
+                class="form-select"
+                name="selectedItem"
+                [(ngModel)]="selectedItem"
+                (selectionchange)="onChange($event)"
+              >
+                <option value="">All Items</option>
+                <option *ngFor="let item of items" [value]="item">
+                  {{ item }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <br />
+
+        <!-- Date Range Picker -->
+        <div class="row justify-content-center">
+          <div class="col-xs-12 col-12 col-md-3 form-group col-md-6">
+            <label class="form-label form-label-top form-label-auto" for="Date"
+              >Please enter a start and end date</label
+            >
+            <input
+              type="text"
+              placeholder="Choose your Date range "
+              class="form-control"
+              name="selectedDateRange"
+              [(ngModel)]="selectedDateRange"
+              bsDaterangepicker
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <br />
+        <div class="d-flex justify-content-center">
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="margin-right: 2%"
+          >
+            <i class="bi bi-file-earmark-text"></i> Request Report
+          </button>
+
+          <button type="button" class="btn btn-danger">
+            <i class="bi bi-x-circle"></i>
+            Clear Report
+          </button>
+        </div>
+        <br />
+      </div>
+    </div>
+    <br />
+
+    <div class="button-group">
+      <!-- Download Buttons -->
+      <div class="col-md-4">
+        <div class="btn-group" role="group" aria-label="Export Buttons">
+          <button type="button" class="btn btn-outline-dark active">
+            <i class="bi bi-file-earmark-text"></i> Export to
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-dark"
+            (click)="downloadPDF()"
+          >
+            <i class="bi bi-file-earmark-pdf"></i> PDF
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-dark"
+            (click)="downloadExcel()"
+          >
+            <i class="bi bi-file-earmark-excel"></i> Excel
+          </button>
+        </div>
+      </div>
+      <h3 class="title">
+        <i class="bi bi-check-circle"></i> List Of Purchase Reports
+      </h3>
+    </div>
+    <br />
+
+    <!-- Table to display filtered items -->
+    <table
+      table-hover
+      datatable
+      [dtOptions]="dtOptions"
+      [dtTrigger]="dtTrigger"
+      class="table table-striped"
+      style="width: 100%"
+    >
+      <thead>
+        <tr>
+          <th>Purchase ID</th>
+          <th>Item Name</th>
+          <th>Purchase Date</th>
+          <th>Purchase Amount</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let purchase of filteredItems">
+          <td>{{ purchase.purchaseId }}</td>
+          <td>{{ purchase.itemName }}</td>
+          <td>{{ purchase.purchaseDate | date : "dd MMMM yyyy H:mm a" }}</td>
+          <td>{{ purchase.amountPaid | currency : "R" }}</td>
+          <td class="text-secondary mouse-hover">
+            <i class="bi bi-trash-fill"></i>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Purchase ID</th>
+          <th>Item name</th>
+          <th>Purchase Date</th>
+          <th>Purchase Amount</th>
+          <th>Actions</th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</form>

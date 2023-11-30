@@ -1,0 +1,17 @@
+.spaced-radio {
+    margin-bottom: 40px;
+  }
+
+.form-control, .input-group-text{
+  border: 1px solid #90a4b8;
+
+}
+
+input[type=radio]{
+  outline: 1px solid rgb(104, 104, 104)
+}
+
+hr {
+  border-top: 1px dotted #2e2d2d;
+}
+
