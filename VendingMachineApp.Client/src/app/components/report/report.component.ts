@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-
 import { ReportService } from 'src/app/services/report.service';
 import { Purchase } from 'src/app/services/purchase.model';
 import { Subject } from 'rxjs';
@@ -16,23 +15,30 @@ import { Items } from 'src/app/services/items.model';
 export class ReportComponent implements OnInit {
   selectedDateRange: Date[] = [];
   selectedItems: Purchase[] = [];
-  items: string[] = ['Sprite', 'Pepsi', 'Lemonade','Coke', 'Water', 'Root Beer'];
-  
+  items: string[] = [
+    'Sprite',
+    'Pepsi',
+    'Lemonade',
+    'Coke',
+    'Water',
+    'Root Beer',
+  ];
+
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
   selectedItem: string = '';
-  filteredItems: { purchaseId: number,
-    itemId: number,
-    itemName: string,
-    amountPaid: number,
-    change: number,
-    purchaseDate: string }[] = [];
+  filteredItems: {
+    purchaseId: number;
+    itemId: number;
+    itemName: string;
+    amountPaid: number;
+    change: number;
+    purchaseDate: string;
+  }[] = [];
 
   constructor(public reportService: ReportService) {}
 
-  onChange(event:any){
-
-  }
+  onChange(event: any) {}
 
   submitForm(): void {
     this.filterItems();
@@ -43,7 +49,6 @@ export class ReportComponent implements OnInit {
       const startDate = this.selectedDateRange[0];
       const endDate = this.selectedDateRange[1];
 
-      // Ensure both start and end dates are available before formatting
       const formattedStartDate = startDate
         ? startDate.toISOString().split('T')[0]
         : null;
@@ -51,7 +56,6 @@ export class ReportComponent implements OnInit {
         ? endDate.toISOString().split('T')[0]
         : null;
 
-      // Filter by date range and product
       const filteredItems = this.selectedItems.filter((item) => {
         return (
           (!formattedStartDate || item.purchaseDate >= formattedStartDate) &&
@@ -64,6 +68,14 @@ export class ReportComponent implements OnInit {
     }
   }
 
+  updateFilteredItems(downloadedData: any[]): void {
+    this.filteredItems = downloadedData;
+
+    // Check if DataTable is already initialized
+    if (this.dtTrigger.observers.length === 0) {
+      this.dtTrigger.next(null);
+    }
+  }
 
   downloadPDF(): void {
     const data = this.filteredItems.map((item) => [
@@ -84,6 +96,8 @@ export class ReportComponent implements OnInit {
       body: data,
     });
     doc.save('vending_machine_data.pdf');
+
+    this.updateFilteredItems(data);
   }
 
   downloadExcel(): void {
@@ -103,6 +117,8 @@ export class ReportComponent implements OnInit {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
     saveAs(dataBlob, 'vending_machine_data.xlsx');
+
+    this.updateFilteredItems(data);
   }
 
   showPurchases(): void {
@@ -118,7 +134,6 @@ export class ReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //datatables settings
     this.dtOptions = {
       pagingType: 'full_numbers',
       pageLength: 5,

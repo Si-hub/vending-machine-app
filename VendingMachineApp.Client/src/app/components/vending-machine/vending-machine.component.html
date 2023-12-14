@@ -11,7 +11,11 @@
   </div>
   <br />
 
-  <form #form="ngForm" (submit)="onSubmit(form)" [class.submitted]="vendingMachineService.formSubmitted" >
+  <form
+    #form="ngForm"
+    (submit)="onSubmit(form)"
+    [class.submitted]="vendingMachineService.formSubmitted"
+  >
     <!-- Hidden inputs for purchaseId, purchaseDate and itemId -->
     <!-- Hidden fields -->
     <input
@@ -105,7 +109,11 @@
         <i class="bi bi-cart3"></i> Make Purchase
       </button>
 
-      <button class="btn btn-danger" type="button" (click)="onCancelPurchase(form)">
+      <button
+        class="btn btn-danger"
+        type="button"
+        (click)="onCancelPurchase(form)"
+      >
         <i class="bi bi-stop-circle"></i> Cancel Purchase
       </button>
     </div>

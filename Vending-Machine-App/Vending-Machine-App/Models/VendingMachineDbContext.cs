@@ -1,27 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Vending_Machine_App.Models;
 
+/// <summary>
+/// Represents the database context for the vending machine application.
+/// </summary>
 public partial class VendingMachineDbContext : DbContext
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VendingMachineDbContext"/> class.
+    /// </summary>
     public VendingMachineDbContext()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VendingMachineDbContext"/> class with the specified options.
+    /// </summary>
+    /// <param name="options">The options for configuring the database context.</param>
     public VendingMachineDbContext(DbContextOptions<VendingMachineDbContext> options)
         : base(options)
     {
     }
 
+    /// <summary>
+    /// Gets or sets the collection of items in the vending machine.
+    /// </summary>
     public virtual DbSet<Item> Items { get; set; }
 
+    /// <summary>
+    /// Gets or sets the collection of purchases made in the vending machine.
+    /// </summary>
     public virtual DbSet<Purchase> Purchases { get; set; }
 
+    /// <summary>
+    /// Configures the options for the database context.
+    /// </summary>
+    /// <param name="optionsBuilder">The builder used to configure the options.</param>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
 
 
+    /// <summary>
+    /// Configures the model for the database context.
+    /// </summary>
+    /// <param name="modelBuilder">The builder used to construct the model.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Item>(entity =>
@@ -68,8 +90,22 @@ public partial class VendingMachineDbContext : DbContext
                 .HasConstraintName("FK_purchases_items");
         });
 
+        SeedDefaultItems(modelBuilder);
+
         OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+    private static void SeedDefaultItems(ModelBuilder modelBuilder)
+    {
+        // Seed 20 default items
+        for (int i = 1; i <= 20; i++)
+        {
+            modelBuilder.Entity<Item>().HasData(
+                new Item { ItemId = i, ItemName = $"Item {i}", ItemPrice = 1.99m + i * 0.1m }
+            );
+        }
+    }
+
 }

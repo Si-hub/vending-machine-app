@@ -17,7 +17,6 @@ export class VendingMachineService {
   list: Purchase[] = [];
   formSubmitted: boolean = false;
   formData: Purchase = new Purchase(0, 0, '', 0, 0, '');
-  
 
   constructor(private http: HttpClient) {}
 
@@ -26,15 +25,14 @@ export class VendingMachineService {
     return this.http.get<any>(this.itemsApiUrl);
   }
 
-
-
-  addPurchases(){
-    return this.http.post(this.purchaseApiUrl, this.formData)
+  addPurchases(itemId: number, amountPaid: number) {
+    const url = `${this.purchaseApiUrl}?itemId=${itemId}&amountPaid=${amountPaid}`;
+    return this.http.post(url, this.formData);
   }
 
   resetForm(form: NgForm) {
-    form.form.reset()
-    this.formData = new Purchase(0, 0, '', 0, 0, '')
-    this.formSubmitted = false
+    form.form.reset();
+    this.formData = new Purchase(0, 0, '', 0, 0, '');
+    this.formSubmitted = false;
   }
 }

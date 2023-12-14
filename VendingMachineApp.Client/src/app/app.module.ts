@@ -11,13 +11,8 @@ import { ReportComponent } from './components/report/report.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
-
 @NgModule({
-  declarations: [
-    AppComponent,
-    VendingMachineComponent,
-    ReportComponent
-  ],
+  declarations: [AppComponent, VendingMachineComponent, ReportComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -27,9 +22,10 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     ReactiveFormsModule,
     BrowserAnimationsModule,
     FormsModule,
-    BsDatepickerModule.forRoot()
+    BsDatepickerModule.forRoot(),
+    DataTablesModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
