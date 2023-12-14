@@ -1,46 +1,40 @@
 .navbar ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
 
 .navbar li {
-    display: inline-block;
-    margin-right: 20px;
-    /* Adjust the margin as needed */
+  display: inline-block;
+  margin-right: 20px;
+  /* Adjust the margin as needed */
 }
 
- .intro-text{
-    color: darkgrey;
-    margin-left: 55%;
-    color: white;
-    font-size: 14;
-    color: rgb(163, 170, 179); /* Set your desired color */
-    /*text-decoration: underline;*/
-    letter-spacing: 1px;
-    
-    
-
+.intro-text {
+  color: darkgrey;
+  margin-left: 55%;
+  color: white;
+  font-size: 14;
+  color: rgb(163, 170, 179); /* Set your desired color */
+  /*text-decoration: underline;*/
+  letter-spacing: 1px;
 }
 
 .navbar-brand {
-    font-family: 'sans-serif';
-    font-weight: bold;
-    font-size: 18px;
-    font-weight: bold;
-
-    
+  font-family: "sans-serif";
+  font-weight: bold;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .navbar a:hover {
-    color: rgb(80,184,72) !important; /* Change to your desired hover color */
-    transition: all 0.3s ease 0s;
-    text-decoration: none !important;
-    outline: none !important;
-    
+  color: rgb(80, 184, 72) !important; /* Change to your desired hover color */
+  transition: all 0.3s ease 0s;
+  text-decoration: none !important;
+  outline: none !important;
 }
 
-
-.welcome, .text-header {
-    color: rgb(80,184,72); /* Color for the selected link */
-  }
+.welcome,
+.text-header {
+  color: rgb(80, 184, 72); /* Color for the selected link */
+}
