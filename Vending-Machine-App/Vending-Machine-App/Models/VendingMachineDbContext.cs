@@ -1,24 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Vending_Machine_App.Models;
 
+/// <summary>
+/// Represents the database context for the vending machine application.
+/// </summary>
 public partial class VendingMachineDbContext : DbContext
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VendingMachineDbContext"/> class.
+    /// </summary>
     public VendingMachineDbContext()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VendingMachineDbContext"/> class with the specified options.
+    /// </summary>
+    /// <param name="options">The options for configuring the database context.</param>
     public VendingMachineDbContext(DbContextOptions<VendingMachineDbContext> options)
         : base(options)
     {
     }
 
+    /// <summary>
+    /// Gets or sets the collection of items in the vending machine.
+    /// </summary>
     public virtual DbSet<Item> Items { get; set; }
 
+    /// <summary>
+    /// Gets or sets the collection of purchases made in the vending machine.
+    /// </summary>
     public virtual DbSet<Purchase> Purchases { get; set; }
 
+    /// <summary>
+    /// Configures the options for the database context.
+    /// </summary>
+    /// <param name="optionsBuilder">The builder used to configure the options.</param>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
 
 
@@ -72,4 +90,7 @@ public partial class VendingMachineDbContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
 }
+
+

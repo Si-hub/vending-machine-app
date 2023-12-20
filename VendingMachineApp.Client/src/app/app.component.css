@@ -10,16 +10,17 @@
     /* Adjust the margin as needed */
 }
 
- .intro-text{
+.intro-text {
     color: darkgrey;
     margin-left: 55%;
     color: white;
     font-size: 14;
-    color: rgb(163, 170, 179); /* Set your desired color */
+    color: rgb(163, 170, 179);
+    /* Set your desired color */
     /*text-decoration: underline;*/
     letter-spacing: 1px;
-    
-    
+
+
 
 }
 
@@ -29,18 +30,21 @@
     font-size: 18px;
     font-weight: bold;
 
-    
+
 }
 
 .navbar a:hover {
-    color: rgb(80,184,72) !important; /* Change to your desired hover color */
+    color: rgb(80, 184, 72) !important;
+    /* Change to your desired hover color */
     transition: all 0.3s ease 0s;
     text-decoration: none !important;
     outline: none !important;
-    
+
 }
 
 
-.welcome, .text-header {
-    color: rgb(80,184,72); /* Color for the selected link */
-  }
+.welcome,
+.text-header {
+    color: rgb(80, 184, 72);
+    /* Color for the selected link */
+}

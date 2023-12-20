@@ -2,46 +2,67 @@
 using OfficeOpenXml; // for Excel generation
 using iTextSharp.text; // for PDF generation
 using iTextSharp.text.pdf;
-using System;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using Vending_Machine_App.Models;
 using OfficeOpenXml.Style;
 using System.Drawing;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Globalization;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
 
 namespace Vending_Machine_App.Controllers
 {
 
-    [Route("api/reports")]
+    /// <summary>
+    /// Controller class for generating purchase reports.
+    /// </summary>
+    [Route("api/reports/")]
     [ApiController]
     
     public class ReportsController : ControllerBase
     {
         private readonly VendingMachineDbContext _dbContext;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReportsController"/> class.
+        /// </summary>
+        /// <param name="dbContext">The database context.</param>
         public ReportsController(VendingMachineDbContext dbContext)
         {
             _dbContext = dbContext;
            
         }
 
-        [HttpGet]
 
-        public IActionResult GeneratePurchaseReport(DateTime startDate, DateTime endDate, string format = "excel")
+        /// <summary>
+        /// Generates a purchase report based on the specified date range and format.
+        /// </summary>
+        /// <param name="startDate">The start date of the report.</param>
+        /// <param name="endDate">The end date of the report.</param>
+        /// <param name="format">The format of the report (default is "excel").</param>
+        /// <returns>The generated report file.</returns>
+        [HttpGet("GeneratePurchaseReport")]
+
+        public IActionResult GeneratePurchaseReport(
+            DateTime? startDate = null,
+            DateTime? endDate = null, 
+            string format = "excel")
         {
+            // If startDate is not provided, default to the last 5 days
+            startDate ??= DateTime.Now.AddDays(-5);
+
+            // If endDate is not provided, default to the current date
+            endDate ??= DateTime.Now;
+
+
             // Fetch the purchase history data from the database based on the specified date range
             var reportData = _dbContext.Purchases
-                .Where(p => p.PurchaseDate >= startDate && p.PurchaseDate <= endDate)
+                .Where(p => p.PurchaseDate >= startDate && p.PurchaseDate <= endDate.Value.AddDays(1))
                 .ToList();
 
 
-            if (reportData == null)
+            if (reportData == null || !reportData.Any())
             {
                 return NotFound("No data found for the specified date range.");
             }
@@ -101,7 +122,7 @@ namespace Vending_Machine_App.Controllers
                 #endregion
 
                 #region formats the column headers
-                var headerRow = new List<string[]>() { new string[] { "Purchase ID", "Item Name", "Amount Paid", "Purchase Date"  } };
+                var headerRow = new List<string[]>() { new string[] { "Purchase ID", "Item Name", "Amount Paid", "Purchase Date"} };
                 worksheet.Cells["A6:D6"].AutoFitColumns();
 
                 // Determine the header range (e.g. A5:D5)

@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Microsoft.EntityFrameworkCore;
 using Vending_Machine_App.Models;
 
@@ -15,6 +16,15 @@ builder.Services.AddDbContext<VendingMachineDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("VendingConApp"));
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", builder =>
+    {
+        builder.WithOrigins("http://localhost:4200") // Replace with your Angular app's URL
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -26,10 +36,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // with a named policy
-app.UseCors(options =>
-options.WithOrigins("http://localhost:4200")
-.AllowAnyMethod()
-.AllowAnyHeader());
+app.UseCors("AllowAngularApp");
 
 
 app.UseAuthorization();

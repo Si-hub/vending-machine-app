@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
-import { Items } from 'src/app/services/items.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-report',
@@ -14,24 +14,37 @@ import { Items } from 'src/app/services/items.model';
   styleUrls: ['./report.component.css'],
 })
 export class ReportComponent implements OnInit {
+  startDate: Date = new Date();
+  endDate: Date = new Date();
   selectedDateRange: Date[] = [];
   selectedItems: Purchase[] = [];
-  items: string[] = ['Sprite', 'Pepsi', 'Lemonade','Coke', 'Water', 'Root Beer'];
-  
+ 
+  items: string[] = [
+    'Sprite',
+    'Pepsi',
+    'Lemonade',
+    'Coke',
+    'Water',
+    'Root Beer',
+  ];
+
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
   selectedItem: string = '';
-  filteredItems: { purchaseId: number,
-    itemId: number,
-    itemName: string,
-    amountPaid: number,
-    change: number,
-    purchaseDate: string }[] = [];
+  
+  filteredItems: {
+    purchaseId: number;
+    itemId: number;
+    itemName: string;
+    amountPaid: number;
+    change: number;
+    purchaseDate: string;
+  }[] = [];
 
-  constructor(public reportService: ReportService) {}
+  constructor(public reportService: ReportService, private toastr: ToastrService) {}
 
-  onChange(event:any){
-
+  onChange(event: any) {
+    console.log(event);
   }
 
   submitForm(): void {
@@ -43,7 +56,11 @@ export class ReportComponent implements OnInit {
       const startDate = this.selectedDateRange[0];
       const endDate = this.selectedDateRange[1];
 
-      // Ensure both start and end dates are available before formatting
+      // Set the end date to the end of the day
+    if (endDate) {
+      endDate.setHours(23, 59, 59, 999);
+    }
+
       const formattedStartDate = startDate
         ? startDate.toISOString().split('T')[0]
         : null;
@@ -55,7 +72,7 @@ export class ReportComponent implements OnInit {
       const filteredItems = this.selectedItems.filter((item) => {
         return (
           (!formattedStartDate || item.purchaseDate >= formattedStartDate) &&
-          (!formattedEndDate || item.purchaseDate <= formattedEndDate) &&
+          (!formattedEndDate || item.purchaseDate < formattedEndDate) &&
           (!this.selectedItem || item.itemName === this.selectedItem)
         );
       });
@@ -64,45 +81,32 @@ export class ReportComponent implements OnInit {
     }
   }
 
+  updateFilteredItems(downloadedData: any[]): void {
+    this.filteredItems = downloadedData;
 
-  downloadPDF(): void {
-    const data = this.filteredItems.map((item) => [
-      item.purchaseId,
-      item.itemName,
-      item.amountPaid,
-      item.purchaseDate,
-    ]);
-    const headers = [
-      'Purchase ID',
-      'Item Name',
-      'Amount Paid',
-      'Purchase Date',
-    ];
-    const doc = new jsPDF();
-    (doc as any).autoTable({
-      head: [headers],
-      body: data,
-    });
-    doc.save('vending_machine_data.pdf');
+    // Check if DataTable is already initialized
+    if (this.dtTrigger.observers.length === 0) {
+      this.dtTrigger.next(null);
+    }
   }
 
-  downloadExcel(): void {
-    const data = this.filteredItems.map((item) => ({
-      purchaseId: item.purchaseId,
-      itemName: item.itemName,
-      amountPaid: item.amountPaid,
-      purchaseDate: item.purchaseDate,
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-    const dataBlob = new Blob([excelBuffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-    saveAs(dataBlob, 'vending_machine_data.xlsx');
+
+  generateReport(format: string) {
+    this.reportService.generatePurchaseReport(this.startDate, this.endDate, format)
+      .subscribe((data: Blob) => {
+        this.downloadReport(data, format);
+      });
+  }
+
+  downloadReport(data: Blob, format: string) {
+    const blob = new Blob([data], { type: 'application/octet-stream' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `purchase_report.${format}`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
   }
 
   showPurchases(): void {
@@ -117,12 +121,23 @@ export class ReportComponent implements OnInit {
     });
   }
 
+  onDelete(id: number) {
+    if (confirm('Are you sure to delete this purchase?'))
+      this.reportService.deletePurchaseDetail(id)
+        .subscribe({
+          next: res => {
+            this.reportService.list = res as Purchase[]
+            this.toastr.error('Deleted successfully', 'Purchase Detail Record')
+          },
+          error: err => { console.log(err) }
+        })
+  }
   ngOnInit(): void {
     //datatables settings
     this.dtOptions = {
       pagingType: 'full_numbers',
-      pageLength: 5,
-      lengthMenu: [5, 10, 25],
+      pageLength: 10,
+      lengthMenu: [10, 25, 50],
       processing: true,
     };
     this.showPurchases();

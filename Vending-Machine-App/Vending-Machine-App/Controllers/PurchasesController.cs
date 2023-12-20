@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DocumentFormat.OpenXml.InkML;
-using iTextSharp.text.pdf.parser.clipper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Vending_Machine_App.Models;
 
 namespace Vending_Machine_App.Controllers
 {
 
+    /// <summary>
+    /// Controller class for managing purchases in the vending machine app.
+    /// </summary>
     [Route("api/purchases")]
     [ApiController]
     
@@ -25,6 +21,10 @@ namespace Vending_Machine_App.Controllers
          
         }
 
+        /// <summary>
+        /// Retrieves the purchase history.
+        /// </summary>
+        /// <returns>A list of purchase records.</returns>
         // GET: api/Purchases
         [HttpGet]
 
@@ -37,7 +37,11 @@ namespace Vending_Machine_App.Controllers
             return await _dbContext.Purchases.ToListAsync();
         }
 
-
+        /// <summary>
+        /// Retrieves a specific purchase record by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the purchase record.</param>
+        /// <returns>The purchase record with the specified ID.</returns>
         // GET: api/PurchaseItems/5
 
         [HttpGet("{id}")]
@@ -57,6 +61,12 @@ namespace Vending_Machine_App.Controllers
             return purchaseItem;
         }
 
+        /// <summary>
+        /// Makes a purchase of an item in the vending machine.
+        /// </summary>
+        /// <param name="itemId">The ID of the item to purchase.</param>
+        /// <param name="amountPaid">The amount paid for the item.</param>
+        /// <returns>The result of the purchase operation.</returns>
         [HttpPost()]
 
         public async Task<IActionResult> MakePurchase(int itemId, decimal amountPaid)
@@ -92,7 +102,13 @@ namespace Vending_Machine_App.Controllers
             });
         }
 
-        // DELETE: api/PurchaseItems/5
+
+        /// <summary>
+        /// Deletes a purchase record by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the purchase record to delete.</param>
+        /// <returns>The result of the delete operation.</returns>
+        // DELETE: api/Purchases/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePurchases(int id)
         {

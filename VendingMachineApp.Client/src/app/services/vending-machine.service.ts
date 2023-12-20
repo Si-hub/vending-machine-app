@@ -5,6 +5,7 @@ import { Purchase } from 'src/app/services/purchase.model';
 import { NgForm } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Items } from './items.model';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -28,13 +29,15 @@ export class VendingMachineService {
 
 
 
-  addPurchases(){
-    return this.http.post(this.purchaseApiUrl, this.formData)
+  addPurchases(itemId: number, amountPaid: number){
+    const url = `${this.purchaseApiUrl}?itemId=${itemId}&amountPaid=${amountPaid}`;
+    return this.http.post(url, this.formData);
   }
 
   resetForm(form: NgForm) {
-    form.form.reset()
-    this.formData = new Purchase(0, 0, '', 0, 0, '')
-    this.formSubmitted = false
+    form.form.reset();
+    this.formData = new Purchase(0, 0, '', 0, 0, '');
+    this.formSubmitted = false;
   }
+
 }

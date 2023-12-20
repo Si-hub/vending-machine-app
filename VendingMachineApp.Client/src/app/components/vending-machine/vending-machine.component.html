@@ -1,6 +1,5 @@
 <br />
-<br />
-<div style="width: 25%; margin: auto">
+<div style="width: 26%; margin: auto">
   <div
     class="bg-body-secondary text-center py-4 rounded-2"
     style="outline: 1px solid rgb(216, 213, 213)"
@@ -11,36 +10,56 @@
   </div>
   <br />
 
-  <form #form="ngForm" (submit)="onSubmit(form)" [class.submitted]="vendingMachineService.formSubmitted" >
+  <form
+    #form="ngForm"
+    (submit)="onSubmit(form)"
+    [class.submitted]="vendingMachineService.formSubmitted" novalidate autocomplete="off"
+  >
     <!-- Hidden inputs for purchaseId, purchaseDate and itemId -->
     <!-- Hidden fields -->
     <input
       type="hidden"
       name="purchaseId"
-      [(ngModel)]="vendingMachineService.formData.purchaseId"
+      [value]="vendingMachineService.formData.purchaseId"
     />
     <input
       type="hidden"
       name="itemId"
-      [(ngModel)]="vendingMachineService.formData.itemId"
+      [value]="vendingMachineService.formData.itemId"
     />
 
     <!-- Amount Paid -->
-    <label>Please Insert Cash</label>
-    <div class="input-group mb-3">
-      <span class="input-group-text">R</span>
-      <input
-        type="number"
-        class="form-control"
-        id="amountPaid"
-        name="amountPaid"
-        [(ngModel)]="amountPaid"
-        required
-      />
-      <span class="input-group-text">.00</span>
+    <div
+      class="form-group"
+      [class.has-error]="amountPaid.invalid && amountPaid.touched"
+    >
+      <label for="amountPaid" class="control-label">Please Insert Cash</label>
+      <div class="input-group mb-3">
+        <span class="input-group-text">R</span>
+        <input
+          type="number"
+          class="form-control"
+          name="amountPaid"
+          required
+          min="5.0"
+          [(ngModel)]="vendingMachineService.formData.amountPaid"
+          #amountPaid="ngModel"
+        />
+        <span class="input-group-text">.00</span>
+      </div>
+      <span
+        class="form-text text-danger"
+        *ngIf="(amountPaid.touched || form.submitted) && amountPaid.errors?.['required']"
+      >
+        Amount is required.
+      </span>
+      <span
+        class="form-text text-danger"
+        *ngIf="(amountPaid.touched || form.submitted) && amountPaid.errors?.['min']"
+      >
+        Amount Paid must be greater than or equal to 5.0
+      </span>
     </div>
-
-    <!--error validation for inserted amount-->
 
     <!--Change -->
     <label for="change">Receive Change</label>
@@ -53,25 +72,28 @@
         placeholder="change "
         aria-describedby="basic-addon1"
         type="number"
-        id="change"
         name="change"
-        [(ngModel)]="change"
+        [(ngModel)]="vendingMachineService.formData.change"
+        #change="ngModel"
         [value]="getCalculatedChange()"
         readonly
       />
     </div>
 
-    <input type="hidden" name="purchaseDate" [(ngModel)]="purchaseDate" />
+    <input
+      type="hidden"
+      name="purchaseDate"
+      [value]="vendingMachineService.formData.purchaseDate"
+    />
 
-    <!-- Item Selection -->
-    <label><strong>Please select an item :</strong></label
+    <!-- Radio buttons for selecting itemName -->
+    <label><strong>Select an item :</strong></label
     ><br />
     <div
       class="bg-light"
       style="display: block; border-radius: 9px; border: 1px solid #99b1c9"
     >
       <br />
-
       <div
         class="form-check form-check-inline"
         *ngFor="let item of items"
@@ -80,12 +102,11 @@
         <input
           class="form-check-input spaced-radio"
           type="radio"
-          name="itemName"
+          name="item"
           (click)="onItemSelect(item)"
           [value]="item.itemId"
           required
         />
-
         <label class="form-check-label" for="inlineRadio1"
           >{{ item.itemName }} - (R{{ item.itemPrice }})
         </label>
@@ -95,6 +116,7 @@
     <br />
     <hr />
 
+    <!-- Purchase and Cancel buttons -->
     <div class="d-grid gap-2 d-md-flex justify-content-md-start">
       <button
         class="btn btn-outline-dark"
@@ -102,11 +124,15 @@
         type="submit"
         [disabled]="!form.valid"
       >
-        <i class="bi bi-cart3"></i> Make Purchase
+        <i class="bi bi-cart3"></i> Purchase Item
       </button>
 
-      <button class="btn btn-danger" type="button" (click)="onCancelPurchase(form)">
-        <i class="bi bi-stop-circle"></i> Cancel Purchase
+      <button
+        class="btn btn-danger"
+        type="button"
+        (click)="onCancelPurchase(form)"
+      >
+        <i class="bi bi-x-circle"></i> Cancel Purchase
       </button>
     </div>
   </form>

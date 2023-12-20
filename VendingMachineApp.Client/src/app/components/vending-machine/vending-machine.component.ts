@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { VendingMachineService } from 'src/app/services/vending-machine.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { NgForm } from '@angular/forms';
 import { Purchase } from 'src/app/services/purchase.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-vending-machine',
@@ -11,16 +12,17 @@ import { Purchase } from 'src/app/services/purchase.model';
 })
 export class VendingMachineComponent implements OnInit {
   items: any[] = [];
-  selectedItem = '';
-  purchaseData: any;
-  amountPaid: number = 0;
-  change: number = 0;
-  purchaseDate = '';
+  SelectedItem = '';
+  amountPaid: number=0;
+  change: number=0;
+  purchaseDate: string='';
 
   constructor(
     private fb: FormBuilder,
-    public vendingMachineService: VendingMachineService
+    public vendingMachineService: VendingMachineService,
+    private toastr: ToastrService
   ) {}
+
 
   ngOnInit(): void {
     this.getItems();
@@ -54,14 +56,22 @@ export class VendingMachineComponent implements OnInit {
   }
 
   makePurchase(form: NgForm) {
-    this.vendingMachineService.addPurchases().subscribe({
+    const itemId = this.vendingMachineService.formData.itemId;
+    const amountPaid = this.vendingMachineService.formData.amountPaid;
+
+    this.vendingMachineService.addPurchases(itemId, amountPaid).subscribe({
       next: (res) => {
         this.vendingMachineService.list = res as Purchase[];
         this.vendingMachineService.resetForm(form);
-        //this.toastr.success('Inserted successfully', 'Payment Detail Register')
+        this.toastr.success('Purchase successful 😊', 'Success');
+
       },
-      error: (err) => {
-        console.log(err);
+      error: (error) => {
+        console.error('Error making the purchase:', error);
+        this.toastr.error(
+          'Error occurred while making the purchase. Please try again. 😞',
+          'Error'
+        );
       },
     });
   }
@@ -75,7 +85,6 @@ export class VendingMachineComponent implements OnInit {
     console.log(amountPaid);
     console.log(selectedId);
     console.log(selectedItem);
-
     if (selectedItem.length > 0) {
       var change = amountPaid - parseFloat(selectedItem[0].itemPrice);
       console.log(change);
@@ -86,7 +95,9 @@ export class VendingMachineComponent implements OnInit {
   }
 
   onCancelPurchase(form: NgForm) {
-    // Reset the form 
+    // Logic to handle cancellation of the current purchase
     form.resetForm();
+    // Display info toast notification
+    this.toastr.info('Purchase cancelled 😢', 'Info');
   }
 }
