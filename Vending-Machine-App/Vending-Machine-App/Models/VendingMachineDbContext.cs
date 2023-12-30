@@ -56,6 +56,9 @@ public partial class VendingMachineDbContext : DbContext
             entity.Property(e => e.ItemPrice)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("item_price");
+            entity.Property(e => e.ItemQuantity)
+                .HasColumnType("int")
+                .HasColumnName("item_quantity");
         });
 
         modelBuilder.Entity<Purchase>(entity =>
@@ -86,10 +89,30 @@ public partial class VendingMachineDbContext : DbContext
                 .HasConstraintName("FK_purchases_items");
         });
 
+        SeedDefaultItems(modelBuilder);
+
         OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+    private static void SeedDefaultItems(ModelBuilder modelBuilder)
+    {
+
+        var items = new[] { 
+            new Item {ItemId = 1,ItemName = "Sprite",ItemPrice = 20.00m,ItemQuantity = 10 },
+            new Item {ItemId = 2,ItemName = "Coke",ItemPrice = 5.00m,ItemQuantity = 10 },
+            new Item {ItemId = 3,ItemName = "Water",ItemPrice = 20.00m,ItemQuantity = 10 },
+            new Item {ItemId = 4,ItemName = "Oreo",ItemPrice = 5.00m,ItemQuantity = 1 },
+            new Item {ItemId = 5, ItemName = "Chips", ItemPrice = 20.00m,ItemQuantity = 10 },
+            new Item {ItemId = 7, ItemName = "Pepsi", ItemPrice = 10.00m,ItemQuantity = 10 },
+            new Item {ItemId = 6, ItemName = "Twist", ItemPrice = 20.00m,ItemQuantity = 10 },
+            new Item {ItemId = 8, ItemName = "Stoney", ItemPrice = 10.00m,ItemQuantity = 10 },
+            new Item {ItemId = 9, ItemName = "BarOne", ItemPrice = 5.00m,ItemQuantity = 10 }
+
+        };
+        modelBuilder.Entity<Item>().HasData(items);
+    }
 
 }
 

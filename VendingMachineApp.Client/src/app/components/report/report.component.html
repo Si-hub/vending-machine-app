@@ -30,7 +30,7 @@
                 [(ngModel)]="selectedItem"
                 (selectionchange)="onChange($event)"
               >
-                <option value="">All Items</option>
+                <option value="">-- Select item --</option>
                 <option *ngFor="let item of items" [value]="item">
                   {{ item }}
                 </option>
@@ -51,7 +51,7 @@
               placeholder="Choose your Date range "
               class="form-control"
               name="selectedDateRange"
-              [(ngModel)]="selectedDateRange" 
+              [(ngModel)]="selectedDateRange"
               bsDaterangepicker
               required
             />
@@ -60,12 +60,12 @@
 
         <!-- Buttons -->
         <br />
-        <div class="d-flex justify-content-center" style="margin-right: 8%;">
+        <div class="d-flex justify-content-center" style="margin-right: 8%">
           <!-- Submit Button -->
           <button
             type="submit"
-            class="btn btn-success "
-            style="margin-right: 2%" 
+            class="btn btn-success"
+            style="margin-right: 2%"
           >
             <i class="bi bi-file-earmark-text"></i> View Selected Report
           </button>
@@ -85,19 +85,19 @@
       <div class="col-md-4">
         <div class="btn-group" role="group" aria-label="Export Buttons">
           <button type="button" class="btn btn-outline-dark active">
-            <i class="bi bi-download"></i> Download Report
+            <i class="bi bi-download"></i> Export to
           </button>
           <button
             type="button"
             class="btn btn-outline-dark"
-            (click)="generateReport('pdf')"
+            (click)=" downloadPDF()"
           >
             <i class="bi bi-file-earmark-pdf"></i> PDF
           </button>
           <button
             type="button"
             class="btn btn-outline-dark"
-            (click)="generateReport('excel')"
+            (click)="downloadExcel()"
           >
             <i class="bi bi-file-earmark-excel"></i> Excel
           </button>
@@ -110,43 +110,38 @@
     <br />
 
     <!-- Table to display filtered items -->
-    <table
-      table-hover
-      datatable
-      [dtOptions]="dtOptions"
-      [dtTrigger]="dtTrigger"
-      class="table table-striped"
-      style="width: 100%"
-    >
-      <thead>
-        <tr>
-          <th>Purchase ID</th>
-          <th>Item Name</th>
-          <th>Purchase Date</th>
-          <th>Purchase Amount</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let purchase of selectedItems">
-          <td>{{ purchase.purchaseId }}</td>
-          <td>{{ purchase.itemName }}</td>
-          <td>{{ purchase.purchaseDate | date : "dd MMMM yyyy H:mm a" }}</td>
-          <td>{{ purchase.amountPaid | currency : "R" }}</td>
-          <td class="text-secondary mouse-hover">
-            <i class="bi bi-trash-fill" (click)="onDelete(purchase.purchaseId)"></i>
-          </td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <th>Purchase ID</th>
-          <th>Item name</th>
-          <th>Purchase Date</th>
-          <th>Purchase Amount</th>
-          <th>Actions</th>
-        </tr>
-      </tfoot>
-    </table >
+    <div class="data-table">
+      <table id="datatable" table-hover datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped" style="width: 100%">
+        <thead class="table-dark">
+          <tr>
+            <th class="text-center">Purchase ID</th>
+            <th class="text-center">Item Name</th>
+            <th class="text-center">Purchase Date</th>
+            <th class="text-center">Purchase Amount</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let purchase of filteredItems">
+            <td class="text-center">{{ purchase.purchaseId }}</td>
+            <td class="text-center">{{ purchase.itemName }}</td>
+            <td class="text-center">{{ purchase.purchaseDate | date : 'medium' }}</td>
+            <td class="text-center">{{ purchase.amountPaid  | number: "2.1-2" | currency: "R"}}</td>
+            <td class="text-secondary mouse-hover">
+              <i class="bi bi-trash-fill" (click)="onDelete(purchase.purchaseId)"></i>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th class="text-center">Purchase ID</th>
+            <th class="text-center">Item name</th>
+            <th class="text-center">Purchase Date</th>
+            <th class="text-center">Purchase Amount</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
   </div>
 </form>

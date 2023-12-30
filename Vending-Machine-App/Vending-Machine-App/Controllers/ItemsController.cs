@@ -4,7 +4,7 @@ using Vending_Machine_App.Models;
 
 namespace Vending_Machine_App.Controllers
 {
-    
+
     [ApiController]
     [Route("api/items")]
     public class ItemsController : ControllerBase
@@ -20,10 +20,10 @@ namespace Vending_Machine_App.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Item>>> GetItems()
         {
-          if (_context.Items == null)
-          {
-              return NotFound();
-          }
+            if (_context.Items == null)
+            {
+                return NotFound();
+            }
             return await _context.Items.ToListAsync();
         }
 

@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Vending_Machine_App.Models;
 
@@ -8,8 +7,6 @@ namespace Vending_Machine_App.Models;
 /// </summary>
 public partial class Purchase
 {
-
-
     /// <summary>
     /// Gets or sets the unique identifier of the purchase.
     /// </summary>

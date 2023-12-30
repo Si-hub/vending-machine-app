@@ -13,7 +13,9 @@
   <form
     #form="ngForm"
     (submit)="onSubmit(form)"
-    [class.submitted]="vendingMachineService.formSubmitted" novalidate autocomplete="off"
+    [class.submitted]="vendingMachineService.formSubmitted"
+    novalidate
+    autocomplete="off"
   >
     <!-- Hidden inputs for purchaseId, purchaseDate and itemId -->
     <!-- Hidden fields -->
@@ -40,8 +42,7 @@
           type="number"
           class="form-control"
           name="amountPaid"
-          required
-          min="5.0"
+          min="5"
           [(ngModel)]="vendingMachineService.formData.amountPaid"
           #amountPaid="ngModel"
         />
@@ -49,35 +50,36 @@
       </div>
       <span
         class="form-text text-danger"
-        *ngIf="(amountPaid.touched || form.submitted) && amountPaid.errors?.['required']"
+        *ngIf="amountPaid.touched && amountPaid.errors?.['required']"
       >
         Amount is required.
       </span>
       <span
         class="form-text text-danger"
-        *ngIf="(amountPaid.touched || form.submitted) && amountPaid.errors?.['min']"
+        *ngIf="amountPaid.touched && amountPaid.errors?.['min']"
       >
         Amount Paid must be greater than or equal to 5.0
       </span>
     </div>
 
     <!--Change -->
-    <label for="change">Receive Change</label>
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon1"
-        ><i class="bi bi-currency-exchange"></i
-      ></span>
-      <input
-        class="form-control"
-        placeholder="change "
-        aria-describedby="basic-addon1"
-        type="number"
-        name="change"
-        [(ngModel)]="vendingMachineService.formData.change"
-        #change="ngModel"
-        [value]="getCalculatedChange()"
-        readonly
-      />
+    <div>
+      <label for="change">Receive Change</label>
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1"
+          ><i class="bi bi-currency-exchange"></i
+        ></span>
+        <input
+          class="form-control"
+          placeholder="change... "
+          aria-describedby="basic-addon1"
+          type="number"
+          name="change"
+          [(ngModel)]="changeAmount"
+          #change="ngModel"
+          readonly
+        />
+      </div>
     </div>
 
     <input

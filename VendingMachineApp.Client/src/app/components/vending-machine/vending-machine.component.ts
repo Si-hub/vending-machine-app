@@ -4,6 +4,7 @@ import { FormBuilder } from '@angular/forms';
 import { NgForm } from '@angular/forms';
 import { Purchase } from 'src/app/services/purchase.model';
 import { ToastrService } from 'ngx-toastr';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-vending-machine',
@@ -13,16 +14,19 @@ import { ToastrService } from 'ngx-toastr';
 export class VendingMachineComponent implements OnInit {
   items: any[] = [];
   SelectedItem = '';
-  amountPaid: number=0;
-  change: number=0;
-  purchaseDate: string='';
+  amountPaid: number = 0;
+  change: number = 0;
+  purchaseDate: string = '';
+
+  changeAmount: number =0;
+  showChangeAmount: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     public vendingMachineService: VendingMachineService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef
   ) {}
-
 
   ngOnInit(): void {
     this.getItems();
@@ -65,13 +69,24 @@ export class VendingMachineComponent implements OnInit {
         this.vendingMachineService.resetForm(form);
         this.toastr.success('Purchase successful 😊', 'Success');
 
+        // Call my existing method to calculate change
+        this.updateChangeAmount();
+
+        // Manually trigger change detection
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error making the purchase:', error);
-        this.toastr.error(
-          'Error occurred while making the purchase. Please try again. 😞',
-          'Error'
-        );
+        if (error.error && error.error.errorMessage) {
+          // Display the out-of-stock error message
+          this.toastr.error(error.error.errorMessage, 'Out of Stock');
+        } else {
+          // Display a generic error message
+          this.toastr.error(
+            'Error occurred while making the purchase. Please try again. 😞',
+            'Error'
+          );
+        }
       },
     });
   }
@@ -85,15 +100,21 @@ export class VendingMachineComponent implements OnInit {
     console.log(amountPaid);
     console.log(selectedId);
     console.log(selectedItem);
+
     if (selectedItem.length > 0) {
       var change = amountPaid - parseFloat(selectedItem[0].itemPrice);
       console.log(change);
       return change;
     } else {
-      return '';
+      return 0;
     }
   }
 
+  // Call this method after the Toastr success notification
+  updateChangeAmount() {
+    this.changeAmount = this.getCalculatedChange();
+    this.showChangeAmount = true;
+  }
   onCancelPurchase(form: NgForm) {
     // Logic to handle cancellation of the current purchase
     form.resetForm();

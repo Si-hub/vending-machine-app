@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Vending_Machine_App.Models;
 
@@ -24,6 +23,8 @@ public partial class Item
     /// </summary>
     [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0.")]
     public decimal? ItemPrice { get; set; }
+
+    public int? ItemQuantity { get; set; }
 
     //public virtual ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
 }

@@ -10,16 +10,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-
 namespace Vending_Machine_App.Controllers
 {
-
     /// <summary>
     /// Controller class for generating purchase reports.
     /// </summary>
-    [Route("api/reports/")]
+    [Route("api/reports")]
     [ApiController]
-    
     public class ReportsController : ControllerBase
     {
         private readonly VendingMachineDbContext _dbContext;
@@ -31,9 +28,7 @@ namespace Vending_Machine_App.Controllers
         public ReportsController(VendingMachineDbContext dbContext)
         {
             _dbContext = dbContext;
-           
         }
-
 
         /// <summary>
         /// Generates a purchase report based on the specified date range and format.
@@ -42,11 +37,10 @@ namespace Vending_Machine_App.Controllers
         /// <param name="endDate">The end date of the report.</param>
         /// <param name="format">The format of the report (default is "excel").</param>
         /// <returns>The generated report file.</returns>
-        [HttpGet("GeneratePurchaseReport")]
-
+        [HttpGet]
         public IActionResult GeneratePurchaseReport(
             DateTime? startDate = null,
-            DateTime? endDate = null, 
+            DateTime? endDate = null,
             string format = "excel")
         {
             // If startDate is not provided, default to the last 5 days
@@ -55,12 +49,10 @@ namespace Vending_Machine_App.Controllers
             // If endDate is not provided, default to the current date
             endDate ??= DateTime.Now;
 
-
             // Fetch the purchase history data from the database based on the specified date range
             var reportData = _dbContext.Purchases
                 .Where(p => p.PurchaseDate >= startDate && p.PurchaseDate <= endDate.Value.AddDays(1))
                 .ToList();
-
 
             if (reportData == null || !reportData.Any())
             {
@@ -112,17 +104,14 @@ namespace Vending_Machine_App.Controllers
                 worksheet.Column(2).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 worksheet.Row(3).Style.Font.Size = 14;
 
-
                 worksheet.Cells["D3"].Value = string.Format("{0:dd MMMM yyyy} at {0:H: mm tt}", DateTimeOffset.Now);
                 worksheet.Cells["D3:F3"].Merge = true;
                 worksheet.Column(5).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 worksheet.Row(3).Style.Font.Size = 12;
-
-
                 #endregion
 
                 #region formats the column headers
-                var headerRow = new List<string[]>() { new string[] { "Purchase ID", "Item Name", "Amount Paid", "Purchase Date"} };
+                var headerRow = new List<string[]>() { new string[] { "Purchase ID", "Item Name", "Amount Paid", "Purchase Date" } };
                 worksheet.Cells["A6:D6"].AutoFitColumns();
 
                 // Determine the header range (e.g. A5:D5)
@@ -135,7 +124,6 @@ namespace Vending_Machine_App.Controllers
                 worksheet.Row(6).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 worksheet.Cells[headerRange].Style.Font.Bold = true;
                 worksheet.Cells[headerRange].Style.Font.Size = 11;
-
                 #endregion
 
                 var row = 7;
@@ -178,7 +166,6 @@ namespace Vending_Machine_App.Controllers
                 table.SpacingBefore = 10f;
                 table.SpacingAfter = 10f;
 
-               
                 // Add table headers
                 table.AddCell(new PdfPCell(new Phrase("Item", font)));
                 table.AddCell(new PdfPCell(new Phrase("Amount Paid", font)));
@@ -199,7 +186,6 @@ namespace Vending_Machine_App.Controllers
                     table.AddCell(amountCell);
 
                     table.AddCell(purchase.PurchaseDate.ToString("yyyy-MM-dd hh:mm:ss tt"));
-                    
                 }
 
                 // Add the table to the document
@@ -208,10 +194,6 @@ namespace Vending_Machine_App.Controllers
 
                 return memoryStream.ToArray();
             }
-
         }
-
     }
-
 }
-
