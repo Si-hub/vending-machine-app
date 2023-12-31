@@ -60,20 +60,17 @@
 
         <!-- Buttons -->
         <br />
-        <div class="d-flex justify-content-center" style="margin-right: 8%">
+        <div class="d-flex justify-content-center" >
           <!-- Submit Button -->
           <button
             type="submit"
-            class="btn btn-success"
-            style="margin-right: 2%"
+            class="btn btn-success col-md-6"
+            
           >
             <i class="bi bi-file-earmark-text"></i> View Selected Report
           </button>
 
-          <button type="button" class="btn btn-danger">
-            <i class="bi bi-arrow-clockwise"></i>
-            Refresh Report Form
-          </button>
+         
         </div>
         <br />
       </div>
@@ -111,7 +108,7 @@
 
     <!-- Table to display filtered items -->
     <div class="data-table">
-      <table id="datatable" table-hover datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped" style="width: 100%">
+      <table id="datatable" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped" style="width: 100%">
         <thead class="table-dark">
           <tr>
             <th class="text-center">Purchase ID</th>
@@ -125,8 +122,8 @@
           <tr *ngFor="let purchase of filteredItems">
             <td class="text-center">{{ purchase.purchaseId }}</td>
             <td class="text-center">{{ purchase.itemName }}</td>
-            <td class="text-center">{{ purchase.purchaseDate | date : 'medium' }}</td>
-            <td class="text-center">{{ purchase.amountPaid  | number: "2.1-2" | currency: "R"}}</td>
+            <td class="text-center">{{ purchase.purchaseDate | date : "yyyy-MM-dd hh:mm:ss a" }}</td>
+            <td class="text-center">{{ purchase.amountPaid  | number:'3.1-5' | currency : "R"}}</td>
             <td class="text-secondary mouse-hover">
               <i class="bi bi-trash-fill" (click)="onDelete(purchase.purchaseId)"></i>
             </td>

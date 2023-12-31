@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DataTableDirective } from 'angular-datatables';
 
 import { ReportService } from 'src/app/services/report.service';
 import { Purchase } from 'src/app/services/purchase.model';
@@ -16,21 +17,25 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./report.component.css'],
 })
 export class ReportComponent implements OnInit {
+
+  @ViewChild(DataTableDirective, { static: false })
+  dtElement: DataTableDirective | undefined;
+
   startDate: Date = new Date();
   endDate: Date = new Date();
   selectedDateRange: Date[] = [];
   selectedItems: Purchase[] = [];
 
   items: string[] = [
-    "Sprite", 
-    "Coke", 
-    "Water", 
-    "Oreo", 
-    "Chips", 
-    "Twist", 
-    "Pepsi", 
-    "Stoney", 
-    "BarOne",
+    'Sprite',
+    'Coke',
+    'Water',
+    'Oreo',
+    'Chips',
+    'Twist',
+    'Pepsi',
+    'Stoney',
+    'BarOne',
     'All items',
   ];
 
@@ -61,32 +66,51 @@ export class ReportComponent implements OnInit {
   }
 
   filterItems(): void {
-    if (this.selectedDateRange && this.selectedItem) {
-      const startDate = this.selectedDateRange[0];
-      const endDate = this.selectedDateRange[1];
+    if (this.selectedDateRange || this.selectedItem) {
+      const startDate = this.selectedDateRange
+        ? new Date(this.selectedDateRange[0])
+        : null;
+      const endDate = this.selectedDateRange
+        ? new Date(this.selectedDateRange[1])
+        : null;
 
-      const filteredItems = this.selectedItems.filter((item) => {
+      // Adjust start and end dates to cover the entire day
+      if (startDate) {
+        startDate.setHours(0, 0, 0, 0);
+      }
+      if (endDate) {
+        endDate.setHours(23, 59, 59, 999);
+      }
+
+      this.filteredItems = this.selectedItems.filter((item) => {
         const itemDate = new Date(item.purchaseDate);
-        itemDate.setHours(0, 0, 0, 0); // Set the time to midnight
 
-        return (
-          (!startDate || itemDate >= startDate) &&
-          (!endDate || itemDate <= endDate) &&
-          (!this.selectedItem || item.itemName === this.selectedItem)
-        );
+        const isWithinDateRange =
+          (!startDate || itemDate.getTime() >= startDate.getTime()) &&
+          (!endDate || itemDate.getTime() <= endDate.getTime());
+
+          const matchesSelectedItem =
+          !this.selectedItem || (this.selectedItem === 'All items') || item.itemName === this.selectedItem;
+
+        return isWithinDateRange && matchesSelectedItem;
       });
-
-      this.filteredItems = filteredItems;
+    } else if (this.selectedItem) {
+      // If only item is selected, filter by item
+      this.filteredItems = this.selectedItems.filter(
+        (item) => item.itemName === this.selectedItem
+      );
+    } else {
+      // If no filters are set, show all items
+      this.filteredItems = this.selectedItems;
     }
-    console.log(this.filteredItems);
   }
 
   updateFilteredItems(downloadedData: any[]): void {
     this.filteredItems = downloadedData;
 
     // Check if DataTable is already initialized
-    if (this.filteredItems.length > 0) {
-      this.dtTrigger.next(null); // Trigger DataTable update
+    if (this.dtTrigger.observers.length === 0) {
+      this.dtTrigger.next(null);
     }
   }
 
@@ -119,7 +143,10 @@ export class ReportComponent implements OnInit {
     });
 
     doc.save('vending_machine_data.pdf');
-    this.updateFilteredItems(data);
+    // Update filtered items only if DataTable is not initialized
+    if (!this.dtElement) {
+      this.updateFilteredItems(data);
+    }
   }
 
   // Helper function to format currency
@@ -146,24 +173,29 @@ export class ReportComponent implements OnInit {
 
   downloadExcel(): void {
     const data = this.filteredItems.map((item) => {
-      const amountPaid = typeof item.amountPaid === 'number' ? item.amountPaid : parseFloat((item.amountPaid as string).replace(/[^0-9.-]+/g, ''));
-    
+      const amountPaid =
+        typeof item.amountPaid === 'number'
+          ? item.amountPaid
+          : parseFloat((item.amountPaid as string).replace(/[^0-9.-]+/g, ''));
+
       if (!isNaN(amountPaid)) {
         const formattedAmountPaid = amountPaid.toLocaleString('en-ZA', {
           style: 'currency',
           currency: 'ZAR',
         });
-    
+
         return {
           purchaseId: item.purchaseId,
           itemName: item.itemName,
           amountPaid: formattedAmountPaid,
-          purchaseDate: new Date(item.purchaseDate).toLocaleDateString('en-ZA', {
-            day: 'numeric',
-            month: 'numeric',
+          purchaseDate: new Date(item.purchaseDate).toLocaleString('en-ZA', {
             year: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true,
           }),
         };
       } else {
@@ -171,83 +203,59 @@ export class ReportComponent implements OnInit {
           purchaseId: item.purchaseId,
           itemName: item.itemName,
           amountPaid: item.amountPaid.toString(), // Display non-numeric value as string
-          purchaseDate: new Date(item.purchaseDate).toLocaleDateString('en-ZA', {
-            day: 'numeric',
-            month: 'numeric',
+          purchaseDate: new Date(item.purchaseDate).toLocaleString('en-ZA', {
             year: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true,
           }),
         };
       }
     });
 
-    // Additional styling options
-    const styleOptions = {
-      header: {
-        fill: { fgColor: { rgb: 'FF000000' } }, // Header background color (black)
-        font: { color: { rgb: 'FFFFFFFF' }, bold: true }, // Header font color (white)
-      },
-      rows: {
-        font: { size: 12, bold: false },
-        fill: { fgColor: { rgb: 'FFD3D3D3' } }, // Row background color (light gray)
-      },
-    };
-
     // Create worksheet
-    const worksheet = XLSX.utils.json_to_sheet(data);
+  const worksheet = XLSX.utils.json_to_sheet(data);
 
-    // Add headers to the worksheet
-    worksheet['A1'] = { t: 's', v: 'Purchase ID' };
-    worksheet['B1'] = { t: 's', v: 'Item Name' };
-    worksheet['C1'] = { t: 's', v: 'Amount Paid' };
-    worksheet['D1'] = { t: 's', v: 'Purchase Date' };
+  // Add headers to the worksheet
+  worksheet['A1'] = { t: 's', v: 'Purchase ID' };
+  worksheet['B1'] = { t: 's', v: 'Item Name' };
+  worksheet['C1'] = { t: 's', v: 'Amount Paid' };
+  worksheet['D1'] = { t: 's', v: 'Purchase Date' };
 
-    // Apply header styling
-    worksheet['A1'].s = styleOptions.header;
-    worksheet['B1'].s = styleOptions.header;
-    worksheet['C1'].s = styleOptions.header;
-    worksheet['D1'].s = styleOptions.header;
+  // Apply header styling
+  worksheet['A1'].s = { font: { bold: true } };
+  worksheet['B1'].s = { font: { bold: true } };
+  worksheet['C1'].s = { font: { bold: true } };
+  worksheet['D1'].s = { font: { bold: true } };
 
-    const ref = worksheet['!ref'];
+  // Apply row styling
+  for (let row = 2; row <= data.length + 1; row++) {
+    worksheet[`A${row}`].s = { fill: { fgColor: { rgb: 'FFD3D3D3' } } };
+    worksheet[`B${row}`].s = { fill: { fgColor: { rgb: 'FFD3D3D3' } } };
+    worksheet[`C${row}`].s = { fill: { fgColor: { rgb: 'FFD3D3D3' } } };
+    worksheet[`D${row}`].s = { fill: { fgColor: { rgb: 'FFD3D3D3' } } };
+  }
 
-    if (ref) {
-      const range = XLSX.utils.decode_range(ref);
+  // Generate Excel buffer
+  const excelBuffer = XLSX.write(
+    { Sheets: { data: worksheet }, SheetNames: ['data'] },
+    { bookType: 'xlsx', type: 'array' }
+  );
 
-      for (let row = range.s.r + 1; row <= range.e.r; row++) {
-        for (let col = range.s.c; col <= range.e.c; col++) {
-          const cellRef = XLSX.utils.encode_cell({ r: row, c: col });
-          const cell = worksheet[cellRef];
+  // Save the Excel file
+  const dataBlob = new Blob([excelBuffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  saveAs(dataBlob, 'vending_machine_data.xlsx');
 
-          // Apply row styling
-          if (cell) {
-            cell.s = styleOptions.rows;
-          }
-        }
-      }
-    } else {
-      console.error(
-        'Worksheet reference is undefined. Unable to apply row styling.'
-      );
-    }
-
-    console.log('Header Style:', styleOptions.header);
-    console.log('Row Style:', styleOptions.rows);
-
-    // Generate Excel buffer
-    const excelBuffer = XLSX.write(
-      { Sheets: { data: worksheet }, SheetNames: ['data'] },
-      { bookType: 'xlsx', type: 'array' }
-    );
-
-    // Save the Excel file
-    const dataBlob = new Blob([excelBuffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-    saveAs(dataBlob, 'vending_machine_data.xlsx');
-
-    // Update filtered items if needed
+  // Update filtered items only if DataTable is not initialized
+  if (!this.dtElement) {
     this.updateFilteredItems(data);
+  }
+   
   }
 
   showPurchases(): void {
@@ -255,7 +263,7 @@ export class ReportComponent implements OnInit {
       next: (res) => {
         this.selectedItems = res as Purchase[];
         this.filteredItems = res;
-        this.dtTrigger.next(null);
+        this.dtTrigger!.next(null); 
       },
       error: (err) => {
         console.log(err);
@@ -277,21 +285,22 @@ export class ReportComponent implements OnInit {
   }
 
   // Method to refresh or clear selected items and date range
-  /*refresh(): void {
-    // Clear selected items in the dropdown
-    this.selectedItems = [];
-    // Clear selected date range in the date picker
-    this.selectedDateRange = [];
-  }*/
+  resetForm() {
+    this.selectedItem = ''; // Clear the selected item
+    this.selectedDateRange = []; // Clear the selected date range
+  }
 
   ngOnInit(): void {
-    //datatables settings
     this.dtOptions = {
       pagingType: 'full_numbers',
       pageLength: 25,
       lengthMenu: [10, 25, 50],
       processing: true,
+      searching: true,
+      ordering: true,
+      responsive: true,
     };
+  
     this.showPurchases();
   }
 }

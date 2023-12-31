@@ -62,22 +62,21 @@
       </span>
     </div>
 
-    <!--Change -->
+    <!-- Change -->
     <div>
       <label for="change">Receive Change</label>
       <div class="input-group mb-3">
-        <span class="input-group-text" id="basic-addon1"
-          ><i class="bi bi-currency-exchange"></i
-        ></span>
+        <span class="input-group-text" id="basic-addon1">
+          <i class="bi bi-currency-exchange"></i>
+        </span>
         <input
-          class="form-control"
-          placeholder="change... "
-          aria-describedby="basic-addon1"
-          type="number"
-          name="change"
-          [(ngModel)]="changeAmount"
-          #change="ngModel"
-          readonly
+        class="form-control"
+        placeholder="change... "
+        aria-describedby="basic-addon1"
+        type="number"
+        name="change"
+        [value]="getCalculatedChange()"
+        readonly
         />
       </div>
     </div>

@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { VendingMachineService } from 'src/app/services/vending-machine.service';
 import { FormBuilder } from '@angular/forms';
 import { NgForm } from '@angular/forms';
 import { Purchase } from 'src/app/services/purchase.model';
 import { ToastrService } from 'ngx-toastr';
-import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-vending-machine',
@@ -17,15 +16,13 @@ export class VendingMachineComponent implements OnInit {
   amountPaid: number = 0;
   change: number = 0;
   purchaseDate: string = '';
-
-  changeAmount: number =0;
-  showChangeAmount: boolean = false;
+  showCalculatedChange: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     public vendingMachineService: VendingMachineService,
     private toastr: ToastrService,
-    private cdr: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -34,12 +31,14 @@ export class VendingMachineComponent implements OnInit {
 
   onItemSelect(item: any) {
     console.log(item);
+    // Preserve the existing amountPaid value if it's greater than 0
+    const amountPaid = this.vendingMachineService.formData.amountPaid;
     this.vendingMachineService.formData = new Purchase(
       0,
       item.itemId,
       item.itemName,
-      this.amountPaid,
-      this.change,
+      amountPaid > 0 ? amountPaid : 0, // Set amountPaid to 0 if it's not greater than 0
+      0,
       this.purchaseDate
     );
   }
@@ -70,10 +69,10 @@ export class VendingMachineComponent implements OnInit {
         this.toastr.success('Purchase successful 😊', 'Success');
 
         // Call my existing method to calculate change
-        this.updateChangeAmount();
+        this.vendingMachineService.formData.change = this.getCalculatedChange();
 
-        // Manually trigger change detection
-        this.cdr.detectChanges();
+        // Set showCalculatedChange to true to display the calculated change
+        this.showCalculatedChange = true;
       },
       error: (error) => {
         console.error('Error making the purchase:', error);
@@ -102,22 +101,16 @@ export class VendingMachineComponent implements OnInit {
     console.log(selectedItem);
 
     if (selectedItem.length > 0) {
-      var change = amountPaid - parseFloat(selectedItem[0].itemPrice);
-      console.log(change);
-      return change;
+      return amountPaid - parseFloat(selectedItem[0].itemPrice);
     } else {
       return 0;
     }
   }
 
-  // Call this method after the Toastr success notification
-  updateChangeAmount() {
-    this.changeAmount = this.getCalculatedChange();
-    this.showChangeAmount = true;
-  }
   onCancelPurchase(form: NgForm) {
-    // Logic to handle cancellation of the current purchase
-    form.resetForm();
+  this.vendingMachineService.resetForm(form);
+  this.vendingMachineService.formData.change = 0;
+  
     // Display info toast notification
     this.toastr.info('Purchase cancelled 😢', 'Info');
   }
