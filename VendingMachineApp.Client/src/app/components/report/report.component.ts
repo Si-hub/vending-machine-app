@@ -284,11 +284,11 @@ export class ReportComponent implements OnInit {
       });
   }
 
-  // Method to refresh or clear selected items and date range
-  resetForm() {
+
+  /*resetForm() {
     this.selectedItem = ''; // Clear the selected item
     this.selectedDateRange = []; // Clear the selected date range
-  }
+  }*/
 
   ngOnInit(): void {
     this.dtOptions = {

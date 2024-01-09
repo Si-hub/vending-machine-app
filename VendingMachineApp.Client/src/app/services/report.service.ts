@@ -18,14 +18,6 @@ export class ReportService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
-  generatePurchaseReport(startDate: Date, endDate: Date, format: string): Observable<Blob> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const options = { headers: headers, responseType: 'blob' as 'json' };
-    const requestPayload = { startDate: startDate.toISOString(), endDate: endDate.toISOString(), format: format };
-
-    return this.http.get<Blob>(this.reportsUrl, { ...options, params: requestPayload });
-  }
-
   deletePurchaseDetail(id: number) {
     return this.http.delete(this.apiUrl + '/' + id)
   }

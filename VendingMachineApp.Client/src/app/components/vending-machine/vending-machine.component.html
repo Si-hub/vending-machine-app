@@ -70,22 +70,16 @@
           <i class="bi bi-currency-exchange"></i>
         </span>
         <input
-        class="form-control"
-        placeholder="change... "
-        aria-describedby="basic-addon1"
-        type="number"
-        name="change"
-        [value]="getCalculatedChange()"
-        readonly
+          class="form-control"
+          placeholder="change... "
+          aria-describedby="basic-addon1"
+          type="number"
+          name="change"
+          [value]="showCalculatedChange ? getCalculatedChange() : ''"
+          readonly
         />
       </div>
     </div>
-
-    <input
-      type="hidden"
-      name="purchaseDate"
-      [value]="vendingMachineService.formData.purchaseDate"
-    />
 
     <!-- Radio buttons for selecting itemName -->
     <label><strong>Select an item :</strong></label
