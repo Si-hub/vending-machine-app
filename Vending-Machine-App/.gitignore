@@ -1,0 +1,6 @@
+# .NET Core
+*.runtimeconfig.json
+*.dll
+*.pdb
+*.exe
+*.sqlite

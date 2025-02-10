@@ -1,0 +1,17 @@
+# Global ignores
+**/.vs/
+**/bin/
+**/obj/
+*.suo
+*.user
+*.cache
+*.log
+
+# Angular (redundant with client's .gitignore but safe)
+**/node_modules/
+**/dist/
+
+# .NET Core
+**/appsettings.Development.json
+**/appsettings.private.json
+*.nupkg
