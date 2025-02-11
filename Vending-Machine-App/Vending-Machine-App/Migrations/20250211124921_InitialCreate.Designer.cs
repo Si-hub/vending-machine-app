@@ -12,7 +12,7 @@ using Vending_Machine_App.Models;
 namespace Vending_Machine_App.Migrations
 {
     [DbContext(typeof(VendingMachineDbContext))]
-    [Migration("20250210133943_InitialCreate")]
+    [Migration("20250211124921_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -33,6 +33,9 @@ namespace Vending_Machine_App.Migrations
                         .HasColumnName("item_id");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemId"));
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ItemName")
                         .IsRequired()
@@ -58,6 +61,7 @@ namespace Vending_Machine_App.Migrations
                         new
                         {
                             ItemId = 1,
+                            Category = "Drink",
                             ItemName = "Sprite",
                             ItemPrice = 20.00m,
                             ItemQuantity = 10
@@ -65,6 +69,7 @@ namespace Vending_Machine_App.Migrations
                         new
                         {
                             ItemId = 2,
+                            Category = "Drink",
                             ItemName = "Coke",
                             ItemPrice = 5.00m,
                             ItemQuantity = 10
@@ -72,6 +77,7 @@ namespace Vending_Machine_App.Migrations
                         new
                         {
                             ItemId = 3,
+                            Category = "Drink",
                             ItemName = "Water",
                             ItemPrice = 20.00m,
                             ItemQuantity = 10
@@ -79,6 +85,7 @@ namespace Vending_Machine_App.Migrations
                         new
                         {
                             ItemId = 4,
+                            Category = "Snack",
                             ItemName = "Oreo",
                             ItemPrice = 5.00m,
                             ItemQuantity = 1
@@ -86,6 +93,7 @@ namespace Vending_Machine_App.Migrations
                         new
                         {
                             ItemId = 5,
+                            Category = "Snack",
                             ItemName = "Chips",
                             ItemPrice = 20.00m,
                             ItemQuantity = 10
@@ -93,6 +101,7 @@ namespace Vending_Machine_App.Migrations
                         new
                         {
                             ItemId = 7,
+                            Category = "Drink",
                             ItemName = "Pepsi",
                             ItemPrice = 10.00m,
                             ItemQuantity = 10
@@ -100,6 +109,7 @@ namespace Vending_Machine_App.Migrations
                         new
                         {
                             ItemId = 6,
+                            Category = "Drink",
                             ItemName = "Twist",
                             ItemPrice = 20.00m,
                             ItemQuantity = 10
@@ -107,6 +117,7 @@ namespace Vending_Machine_App.Migrations
                         new
                         {
                             ItemId = 8,
+                            Category = "Drink",
                             ItemName = "Stoney",
                             ItemPrice = 10.00m,
                             ItemQuantity = 10
@@ -114,6 +125,7 @@ namespace Vending_Machine_App.Migrations
                         new
                         {
                             ItemId = 9,
+                            Category = "Snack",
                             ItemName = "BarOne",
                             ItemPrice = 5.00m,
                             ItemQuantity = 10

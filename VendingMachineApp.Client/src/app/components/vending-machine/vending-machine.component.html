@@ -3,7 +3,7 @@
     <div class="card-header text-center bg-success text-white">
       <h2 class="fw-bold">
         <i class="bi bi-shop"></i> Vending Machine
-    </h2>
+      </h2>
     </div>
 
     <div class="card-body">
@@ -14,8 +14,8 @@
           <div class="input-group">
             <span class="input-group-text">
               <i class="bi bi-cash-coin"></i>
-          </span>
-            <input type="number" class="form-control" name="amountPaid" min="5"
+            </span>
+            <input type="number" class="form-control" name="amountPaid" min="5" max="9999" required
               [(ngModel)]="vendingMachineService.formData.amountPaid" #amountPaid="ngModel" />
             <span class="input-group-text">.00</span>
           </div>
@@ -23,7 +23,10 @@
             Amount is required.
           </div>
           <div class="form-text text-danger" *ngIf="amountPaid?.touched && amountPaid?.errors?.['min']">
-            Amount must be at least R5.00
+            Amount must be at least R5.00.
+          </div>
+          <div class="form-text text-danger" *ngIf="amountPaid?.touched && amountPaid?.errors?.['max']">
+            Amount must not exceed R9999.00.
           </div>
         </div>
 
@@ -33,7 +36,7 @@
           <div class="input-group">
             <span class="input-group-text">
               <i class="bi bi-arrow-repeat"></i>
-          </span>
+            </span>
             <input class="form-control" placeholder="Change..." readonly
               [value]="showCalculatedChange ? getCalculatedChange() : ''" />
           </div>
@@ -42,21 +45,32 @@
         <!-- Select an Item -->
         <label><strong>Select an Item:</strong></label>
         <div class="items-container">
-          <div 
-            class="card item-card"
-            *ngFor="let item of items"
-            [class.selected]="item.itemId === SelectedItem"
-            (click)="onItemSelect(item)"
-          >
+          <div class="card item-card" *ngFor="let item of items" [class.selected]="item.itemId === SelectedItem"
+            (click)="onItemSelect(item)">
             <div class="card-body text-center">
               <h5 class="card-title">{{ item.itemName }}</h5>
               <p class="card-text">R{{ item.itemPrice }}</p>
-              <i class="bi bi-basket2 me-2"></i>
-              
+
+              <!-- Show different icons based on item category -->
+              <ng-container [ngSwitch]="item.category">
+                <i *ngSwitchCase="'Drink'" class="fa-solid fa-bottle-water"></i>
+                <i *ngSwitchCase="'Snack'" class="fa-solid fa-cookie"></i>
+                <i *ngSwitchCase="'Water'" class="fa fa-tint" aria-hidden="true"></i>
+                <i *ngSwitchDefault class="fa-solid fa-question-circle"></i>
+              </ng-container>
             </div>
           </div>
         </div>
-        
+
+        <!-- Item Selection Error -->
+        <div class="form-text text-danger" *ngIf="!SelectedItem && form.submitted">
+          Please select an item before proceeding.
+        </div>
+
+        <!-- Insufficient Funds Error -->
+        <div class="form-text text-danger" *ngIf="amountPaid.value < getSelectedItemPrice() && form.submitted">
+          Insufficient funds. Please insert at least R{{ getSelectedItemPrice() }}.
+        </div>
 
         <!-- Purchase & Cancel Buttons -->
         <div class="d-grid gap-2 mt-3">

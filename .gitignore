@@ -1,17 +1,22 @@
-# Global ignores
-**/.vs/
-**/bin/
-**/obj/
+# Visual Studio
+.vs/
 *.suo
 *.user
+*.userprefs
+
+# Build outputs
+[Bb]in/
+[Oo]bj/
+*.exe
+*.dll
+*.pdb
 *.cache
-*.log
 
-# Angular (redundant with client's .gitignore but safe)
-**/node_modules/
-**/dist/
+# Angular
+node_modules/
+dist/
+*.js.map
 
-# .NET Core
-**/appsettings.Development.json
-**/appsettings.private.json
-*.nupkg
+# Runtime files
+*.runtimeconfig.json
+appsettings.Development.json

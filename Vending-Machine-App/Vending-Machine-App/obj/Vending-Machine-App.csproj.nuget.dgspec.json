@@ -1,32 +1,36 @@
 {
   "format": 1,
   "restore": {
-    "F:\\coreAPI\\Vending-Machine-App\\Vending-Machine-App\\Vending-Machine-App\\Vending-Machine-App.csproj": {}
+    "C:\\Users\\zweto\\vending-machine-app\\Vending-Machine-App\\Vending-Machine-App\\Vending-Machine-App.csproj": {}
   },
   "projects": {
-    "F:\\coreAPI\\Vending-Machine-App\\Vending-Machine-App\\Vending-Machine-App\\Vending-Machine-App.csproj": {
+    "C:\\Users\\zweto\\vending-machine-app\\Vending-Machine-App\\Vending-Machine-App\\Vending-Machine-App.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\coreAPI\\Vending-Machine-App\\Vending-Machine-App\\Vending-Machine-App\\Vending-Machine-App.csproj",
+        "projectUniqueName": "C:\\Users\\zweto\\vending-machine-app\\Vending-Machine-App\\Vending-Machine-App\\Vending-Machine-App.csproj",
         "projectName": "Vending-Machine-App",
-        "projectPath": "F:\\coreAPI\\Vending-Machine-App\\Vending-Machine-App\\Vending-Machine-App\\Vending-Machine-App.csproj",
-        "packagesPath": "C:\\Users\\simthembiled\\.nuget\\packages\\",
-        "outputPath": "F:\\coreAPI\\Vending-Machine-App\\Vending-Machine-App\\Vending-Machine-App\\obj\\",
+        "projectPath": "C:\\Users\\zweto\\vending-machine-app\\Vending-Machine-App\\Vending-Machine-App\\Vending-Machine-App.csproj",
+        "packagesPath": "C:\\Users\\zweto\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\zweto\\vending-machine-app\\Vending-Machine-App\\Vending-Machine-App\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\simthembiled\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\zweto\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net7.0"
+          "net8.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net7.0": {
-            "targetAlias": "net7.0",
+          "net8.0": {
+            "targetAlias": "net8.0",
             "projectReferences": {}
           }
         },
@@ -34,11 +38,17 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
-        "net7.0": {
-          "targetAlias": "net7.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "dependencies": {
             "DocumentFormat.OpenXml": {
               "target": "Package",
@@ -74,9 +84,9 @@
               "target": "Package",
               "version": "[6.5.0, )"
             },
-            "iTextSharp": {
+            "itext7": {
               "target": "Package",
-              "version": "[5.5.13.3, )"
+              "version": "[9.0.0, )"
             }
           },
           "imports": [
@@ -98,7 +108,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

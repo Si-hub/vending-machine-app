@@ -12,8 +12,8 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class VendingMachineComponent implements OnInit {
   items: any[] = [];
-  SelectedItem: string | null = '';
-  amountPaid: number = 0; // Ensure this variable exists
+  SelectedItem: string | null = null;
+  amountPaid: number = 0;
   change: number = 0;
   purchaseDate: string = '';
   showCalculatedChange: boolean = false;
@@ -31,11 +31,8 @@ export class VendingMachineComponent implements OnInit {
 
   onItemSelect(item: any) {
     console.log('Selected Item:', item);
-    
-    // Set the selected item
-    this.SelectedItem = item.itemId; 
-  
-    // Update formData with the selected item
+    this.SelectedItem = item.itemId;
+
     this.vendingMachineService.formData = new Purchase(
       0,
       item.itemId,
@@ -45,7 +42,6 @@ export class VendingMachineComponent implements OnInit {
       this.purchaseDate
     );
   }
-  
 
   getItems(): void {
     this.vendingMachineService.getItem().subscribe((data) => {
@@ -54,28 +50,60 @@ export class VendingMachineComponent implements OnInit {
     });
   }
 
+  getSelectedItemPrice(): number {
+    if (!this.SelectedItem) return 0; // If no item is selected, return 0
+  
+    const selectedItem = this.items.find((item) => item.itemId === this.SelectedItem);
+    return selectedItem ? parseFloat(selectedItem.itemPrice) : 0;
+  }
+  
+
+  /**
+   * Validates the form before submission
+   */
+  validateForm(): boolean {
+    if (!this.SelectedItem) {
+      this.toastr.error('Please select an item before proceeding.', 'Error');
+      return false;
+    }
+
+    if (!this.vendingMachineService.formData.amountPaid || this.vendingMachineService.formData.amountPaid < 5) {
+      this.toastr.error('Minimum amount required is R5.00.', 'Error');
+      return false;
+    }
+
+    const selectedItem = this.items.find((item) => item.itemId === this.SelectedItem);
+    if (selectedItem && this.vendingMachineService.formData.amountPaid < selectedItem.itemPrice) {
+      this.toastr.error(`Insufficient funds. Please insert at least R${selectedItem.itemPrice}.`, 'Error');
+      return false;
+    }
+
+    return true;
+  }
+
   onSubmit(form: NgForm) {
     this.vendingMachineService.formSubmitted = true;
-    if (form.valid) {
-      if (this.vendingMachineService.formData.purchaseId == 0)
-        this.makePurchase(form);
+
+    if (!this.validateForm()) {
+      return;
+    }
+
+    if (this.vendingMachineService.formData.purchaseId == 0) {
+      this.makePurchase(form);
     }
   }
 
   makePurchase(form: NgForm) {
     const itemId = this.vendingMachineService.formData.itemId;
     const amountPaid = this.vendingMachineService.formData.amountPaid;
-  
+
     this.vendingMachineService.addPurchases(itemId, amountPaid).subscribe({
       next: (res) => {
         this.vendingMachineService.list = res as Purchase[];
         this.vendingMachineService.resetForm(form);
         this.toastr.success('Purchase successful 😊', 'Success');
-  
-        // Reset the selected item
-        this.SelectedItem = null; 
-  
-        // Call the method to calculate and display change
+
+        this.SelectedItem = null;
         this.vendingMachineService.formData.change = this.getCalculatedChange();
         this.showCalculatedChange = true;
       },
@@ -96,29 +124,17 @@ export class VendingMachineComponent implements OnInit {
   getCalculatedChange() {
     const amountPaid = this.vendingMachineService.formData.amountPaid;
     let selectedId = this.vendingMachineService.formData.itemId;
-  
-    console.log('Amount Paid in getCalculatedChange:', amountPaid);
-    console.log('Selected Id:', selectedId);
-    console.log('Items Array:', this.items);
-  
+
     if (!selectedId) {
-      // If selectedId is 0 or falsy, set it to the first item's itemId
-      selectedId = this.items[0].itemId;
-      this.vendingMachineService.formData.itemId = selectedId; // Update the formData
+      selectedId = this.items[0]?.itemId;
+      this.vendingMachineService.formData.itemId = selectedId;
     }
-  
+
     const selectedItem = this.items.find((item) => item.itemId === selectedId);
-  
-    console.log('Selected Item:', selectedItem);
-  
+
     if (selectedItem) {
-      var change = amountPaid - parseFloat(selectedItem.itemPrice);
-  
-      // Ensure the calculated change is not negative
-      change = Math.max(change, 0);
-  
-      console.log('Calculated Change:', change);
-      return change;
+      let change = amountPaid - parseFloat(selectedItem.itemPrice);
+      return Math.max(change, 0);
     } else {
       return 0;
     }
@@ -127,11 +143,8 @@ export class VendingMachineComponent implements OnInit {
   onCancelPurchase(form: NgForm) {
     this.vendingMachineService.resetForm(form);
     this.vendingMachineService.formData.change = 0;
-    this.SelectedItem = null;  // Reset selected item
-    this.showCalculatedChange = false; // Hide change display
-  
-    // Display info toast notification
+    this.SelectedItem = null;
+    this.showCalculatedChange = false;
     this.toastr.info('Purchase cancelled 😢', 'Info');
   }
-  
 }

@@ -1,11 +1,12 @@
 {
   "Version": 1,
-  "Hash": "6d1j/SERsSnN8Gyfm0/xVAZbNqxWntdhYv+mvioTh/o=",
+  "Hash": "Zy2EjRjtfVRCF18LZfSBNCQ7vBPIxwDGkjoK0rhzKic=",
   "Source": "Vending-Machine-App",
   "BasePath": "_content/Vending-Machine-App",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": []
+  "Assets": [],
+  "Endpoints": []
 }

@@ -21,7 +21,8 @@ namespace Vending_Machine_App.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     item_name = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
                     item_price = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
-                    item_quantity = table.Column<int>(type: "int", nullable: true)
+                    item_quantity = table.Column<int>(type: "int", nullable: true),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -52,18 +53,18 @@ namespace Vending_Machine_App.Migrations
 
             migrationBuilder.InsertData(
                 table: "items",
-                columns: new[] { "item_id", "item_name", "item_price", "item_quantity" },
+                columns: new[] { "item_id", "Category", "item_name", "item_price", "item_quantity" },
                 values: new object[,]
                 {
-                    { 1, "Sprite", 20.00m, 10 },
-                    { 2, "Coke", 5.00m, 10 },
-                    { 3, "Water", 20.00m, 10 },
-                    { 4, "Oreo", 5.00m, 1 },
-                    { 5, "Chips", 20.00m, 10 },
-                    { 6, "Twist", 20.00m, 10 },
-                    { 7, "Pepsi", 10.00m, 10 },
-                    { 8, "Stoney", 10.00m, 10 },
-                    { 9, "BarOne", 5.00m, 10 }
+                    { 1, "Drink", "Sprite", 20.00m, 10 },
+                    { 2, "Drink", "Coke", 5.00m, 10 },
+                    { 3, "Drink", "Water", 20.00m, 10 },
+                    { 4, "Snack", "Oreo", 5.00m, 1 },
+                    { 5, "Snack", "Chips", 20.00m, 10 },
+                    { 6, "Drink", "Twist", 20.00m, 10 },
+                    { 7, "Drink", "Pepsi", 10.00m, 10 },
+                    { 8, "Drink", "Stoney", 10.00m, 10 },
+                    { 9, "Snack", "BarOne", 5.00m, 10 }
                 });
 
             migrationBuilder.CreateIndex(
