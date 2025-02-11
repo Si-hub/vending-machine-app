@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml; // for Excel generation
-using iTextSharp.text; // for PDF generation
-using iTextSharp.text.pdf;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
 using Vending_Machine_App.Models;
 using OfficeOpenXml.Style;
 using System.Drawing;
@@ -9,6 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using iText.IO.Font.Constants;
+using iText.Kernel.Colors;
+using iText.Kernel.Font;
+using iText.Layout.Properties;
 
 namespace Vending_Machine_App.Controllers
 {
@@ -119,8 +124,8 @@ namespace Vending_Machine_App.Controllers
 
                 // Popular header row data
                 worksheet.Cells[headerRange].LoadFromArrays(headerRow);
-                worksheet.Cells[headerRange].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                worksheet.Cells[headerRange].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                worksheet.Cells[headerRange].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[headerRange].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
                 worksheet.Row(6).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 worksheet.Cells[headerRange].Style.Font.Bold = true;
                 worksheet.Cells[headerRange].Style.Font.Size = 11;
@@ -147,49 +152,49 @@ namespace Vending_Machine_App.Controllers
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                Document document = new Document();
-                PdfWriter writer = PdfWriter.GetInstance(document, memoryStream);
-                document.Open();
+                // Initialize PDF Writer and Document
+                PdfWriter writer = new PdfWriter(memoryStream);
+                PdfDocument pdfDocument = new PdfDocument(writer);
+                Document document = new Document(pdfDocument);
 
-                // Set the font for the report
-                var baseFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
-                var font = new iTextSharp.text.Font(baseFont, 13, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
+                // Set Font (Using Helvetica)
+                PdfFont font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
+                PdfFont boldFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
 
-                // Add a title to the report
-                var title = new Paragraph("Purchase History Report", new iTextSharp.text.Font(baseFont, 16, iTextSharp.text.Font.BOLD, BaseColor.LIGHT_GRAY));
-                title.Alignment = Element.ALIGN_CENTER;
+                // Add Title
+                Paragraph title = new Paragraph("Purchase History Report")
+                    .SetFont(boldFont)
+                    .SetFontSize(16)
+                    .SetFontColor(ColorConstants.BLACK)
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetMarginBottom(20);
+
                 document.Add(title);
 
-                // Add a table for the purchase history
-                var table = new PdfPTable(3);
-                table.WidthPercentage = 100;
-                table.SpacingBefore = 10f;
-                table.SpacingAfter = 10f;
+                // Create Table with 3 Columns
+                Table table = new Table(3);
+                table.SetWidth(UnitValue.CreatePercentValue(100));
 
-                // Add table headers
-                table.AddCell(new PdfPCell(new Phrase("Item", font)));
-                table.AddCell(new PdfPCell(new Phrase("Amount Paid", font)));
-                table.AddCell(new PdfPCell(new Phrase("Purchase Date", font)));
+                // Add Table Headers
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Item").SetFont(boldFont)));
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Amount Paid").SetFont(boldFont)));
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Purchase Date").SetFont(boldFont)));
 
-                // Set table body cell background color
-                table.DefaultCell.BackgroundColor = BaseColor.WHITE;
-
-                // Populate the table with purchase data
+                // Populate Table with Data
                 foreach (Purchase purchase in reportData)
                 {
-                    // Add table rows
-                    table.AddCell(purchase.ItemName);
+                    table.AddCell(new Cell().Add(new Paragraph(purchase.ItemName).SetFont(font)));
 
                     // Format the amount with ZAR currency
-                    PdfPCell amountCell = new PdfPCell(new Phrase(string.Format("R{0:N2}", purchase.AmountPaid)));
-                    amountCell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    table.AddCell(amountCell);
+                    table.AddCell(new Cell().Add(new Paragraph($"R{purchase.AmountPaid:N2}").SetFont(font)));
 
-                    table.AddCell(purchase.PurchaseDate.ToString("yyyy-MM-dd hh:mm:ss tt"));
+                    table.AddCell(new Cell().Add(new Paragraph(purchase.PurchaseDate.ToString("yyyy-MM-dd hh:mm:ss tt")).SetFont(font)));
                 }
 
-                // Add the table to the document
+                // Add Table to Document
                 document.Add(table);
+
+                // Close Document
                 document.Close();
 
                 return memoryStream.ToArray();

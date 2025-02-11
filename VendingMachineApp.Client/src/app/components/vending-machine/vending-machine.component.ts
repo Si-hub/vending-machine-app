@@ -12,8 +12,8 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class VendingMachineComponent implements OnInit {
   items: any[] = [];
-  SelectedItem = '';
-  amountPaid: number = 0;
+  SelectedItem: string | null = '';
+  amountPaid: number = 0; // Ensure this variable exists
   change: number = 0;
   purchaseDate: string = '';
   showCalculatedChange: boolean = false;
@@ -31,19 +31,21 @@ export class VendingMachineComponent implements OnInit {
 
   onItemSelect(item: any) {
     console.log('Selected Item:', item);
-    // Preserve the existing amountPaid value if it's greater than 0
-    const amountPaid = this.vendingMachineService.formData.amountPaid;
+    
+    // Set the selected item
+    this.SelectedItem = item.itemId; 
   
-    // Set the itemId in the formData
+    // Update formData with the selected item
     this.vendingMachineService.formData = new Purchase(
       0,
-      item.itemId,  // Make sure item.itemId is correct based on your dynamic data
+      item.itemId,
       item.itemName,
-      amountPaid > 0 ? amountPaid : 0,
+      this.vendingMachineService.formData.amountPaid || 0,
       0,
       this.purchaseDate
     );
   }
+  
 
   getItems(): void {
     this.vendingMachineService.getItem().subscribe((data) => {
@@ -63,38 +65,25 @@ export class VendingMachineComponent implements OnInit {
   makePurchase(form: NgForm) {
     const itemId = this.vendingMachineService.formData.itemId;
     const amountPaid = this.vendingMachineService.formData.amountPaid;
-
+  
     this.vendingMachineService.addPurchases(itemId, amountPaid).subscribe({
       next: (res) => {
         this.vendingMachineService.list = res as Purchase[];
         this.vendingMachineService.resetForm(form);
         this.toastr.success('Purchase successful 😊', 'Success');
-
-        // Log the amountPaid to check if it's correct
-        console.log('Amount Paid:', amountPaid);
-
-        // Make sure to set the updated amountPaid after the purchase
-        this.vendingMachineService.formData.amountPaid = amountPaid;
-
-        // Call my existing method to calculate change
+  
+        // Reset the selected item
+        this.SelectedItem = null; 
+  
+        // Call the method to calculate and display change
         this.vendingMachineService.formData.change = this.getCalculatedChange();
-
-        // Log the calculated change to check its value
-        console.log(
-          'Calculated Change:',
-          this.vendingMachineService.formData.change
-        );
-
-        // Set showCalculatedChange to true to display the calculated change
         this.showCalculatedChange = true;
       },
       error: (error) => {
         console.error('Error making the purchase:', error);
         if (error.error && error.error.errorMessage) {
-          // Display the out-of-stock error message
           this.toastr.error(error.error.errorMessage, 'Out of Stock');
         } else {
-          // Display a generic error message
           this.toastr.error(
             'Error occurred while making the purchase. Please try again. 😞',
             'Error'
@@ -138,8 +127,11 @@ export class VendingMachineComponent implements OnInit {
   onCancelPurchase(form: NgForm) {
     this.vendingMachineService.resetForm(form);
     this.vendingMachineService.formData.change = 0;
-
+    this.SelectedItem = null;  // Reset selected item
+    this.showCalculatedChange = false; // Hide change display
+  
     // Display info toast notification
     this.toastr.info('Purchase cancelled 😢', 'Info');
   }
+  
 }

@@ -1,17 +1,63 @@
-.spaced-radio {
-    margin-bottom: 40px;
-  }
-
-.form-control, .input-group-text{
-  border: 1px solid #90a4b8;
-
+/* Center the vending machine container */
+.vending-container {
+  max-width: 710px; /* ✅ Make form wider */
+  margin: 40px auto;
+  padding: 20px;
 }
 
-input[type=radio]{
-  outline: 1px solid rgb(104, 104, 104)
+/* Card Styling */
+.card {
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-hr {
-  border-top: 1px dotted #2e2d2d;
+.card-header {
+  font-size: 22px;
 }
 
+/* Make Items Appear as a Grid */
+.items-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+/* Individual Item Card */
+.item-card {
+  padding: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+
+.card-title {
+  white-space: normal; /* Allow wrapping if needed */
+  overflow: visible;
+  text-overflow: clip;
+}
+.item-card:hover {
+  transform: scale(1.1);
+  border: 2px solid #28a745; /* Green border on hover */
+}
+
+.item-card.selected {
+  border: 3px solid #28a745; /* Green border for selected item */
+  background-color: #e8f5e9; /* Light green background */
+}
+
+/* Item Icon */
+.item-icon {
+  font-size: 24px;
+  color: #28a745;
+}
+
+.item-card:hover .item-icon {
+  color: #155724;
+}
+
+/* Buttons */
+.btn-lg {
+  font-size: 18px;
+}
