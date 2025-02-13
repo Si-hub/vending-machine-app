@@ -48,8 +48,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAll");
 
 // Serve static files for Angular
-app.UseDefaultFiles();  // To serve index.html by default
-app.UseStaticFiles();   // Enable serving static files
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.UseAuthorization();
 
@@ -58,4 +58,6 @@ app.MapControllers();
 // For Angular routing
 app.MapFallbackToFile("index.html");
 
-app.Run();
+// Render-specific port configuration
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Run($"http://0.0.0.0:{port}"); // Modified line

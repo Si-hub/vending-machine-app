@@ -14,8 +14,16 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "allowedCommonJsDependencies": [
-              "lodash"
-           ],
+              "lodash",
+              "canvg",
+              "file-saver",
+              "jspdf-autotable",
+              "core-js",
+              "rgbcolor",
+              "raf",
+              "html2canvas",
+              "dompurify"
+            ],
             "outputPath": "dist/vending-machine-app.client",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -34,7 +42,6 @@
               "node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css",
               "node_modules/ngx-toastr/toastr.css",
               "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
-              
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
@@ -52,8 +59,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "3mb",
+                  "maximumError": "5mb"
                 }
               ],
               "outputHashing": "all"
