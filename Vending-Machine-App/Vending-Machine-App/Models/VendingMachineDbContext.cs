@@ -39,7 +39,6 @@ public partial class VendingMachineDbContext : DbContext
     /// <param name="optionsBuilder">The builder used to configure the options.</param>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
 
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Item>(entity =>
@@ -89,7 +88,12 @@ public partial class VendingMachineDbContext : DbContext
                 .HasConstraintName("FK_purchases_items");
         });
 
-        SeedDefaultItems(modelBuilder);
+        // Always seed data for in-memory database, or when explicitly configured
+        if (Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory" ||
+            Database.IsSqlServer() && Database.GetConnectionString() == "InMemory")
+        {
+            SeedDefaultItems(modelBuilder);
+        }
 
         OnModelCreatingPartial(modelBuilder);
     }
@@ -100,20 +104,16 @@ public partial class VendingMachineDbContext : DbContext
     {
         var items = new[]
         {
-        new Item { ItemId = 1, ItemName = "Sprite", ItemPrice = 20.00m, ItemQuantity = 10, Category = "Drink" },
-        new Item { ItemId = 2, ItemName = "Coke", ItemPrice = 5.00m, ItemQuantity = 10, Category = "Drink" },
-        new Item { ItemId = 3, ItemName = "Water", ItemPrice = 20.00m, ItemQuantity = 10, Category = "Drink" },
-        new Item { ItemId = 4, ItemName = "Oreo", ItemPrice = 5.00m, ItemQuantity = 1, Category = "Snack" },
-        new Item { ItemId = 5, ItemName = "Chips", ItemPrice = 20.00m, ItemQuantity = 10, Category = "Snack" },
-        new Item { ItemId = 7, ItemName = "Pepsi", ItemPrice = 10.00m, ItemQuantity = 10, Category = "Drink" },
-        new Item { ItemId = 6, ItemName = "Twist", ItemPrice = 20.00m, ItemQuantity = 10, Category = "Drink" },
-        new Item { ItemId = 8, ItemName = "Stoney", ItemPrice = 10.00m, ItemQuantity = 10, Category = "Drink" },
-        new Item { ItemId = 9, ItemName = "BarOne", ItemPrice = 5.00m, ItemQuantity = 10, Category = "Snack" }
-    };
+            new Item { ItemId = 1, ItemName = "Sprite", ItemPrice = 20.00m, ItemQuantity = 10, Category = "Drink" },
+            new Item { ItemId = 2, ItemName = "Coke", ItemPrice = 5.00m, ItemQuantity = 10, Category = "Drink" },
+            new Item { ItemId = 3, ItemName = "Water", ItemPrice = 20.00m, ItemQuantity = 10, Category = "Drink" },
+            new Item { ItemId = 4, ItemName = "Oreo", ItemPrice = 5.00m, ItemQuantity = 1, Category = "Snack" },
+            new Item { ItemId = 5, ItemName = "Chips", ItemPrice = 20.00m, ItemQuantity = 10, Category = "Snack" },
+            new Item { ItemId = 7, ItemName = "Pepsi", ItemPrice = 10.00m, ItemQuantity = 10, Category = "Drink" },
+            new Item { ItemId = 6, ItemName = "Twist", ItemPrice = 20.00m, ItemQuantity = 10, Category = "Drink" },
+            new Item { ItemId = 8, ItemName = "Stoney", ItemPrice = 10.00m, ItemQuantity = 10, Category = "Drink" },
+            new Item { ItemId = 9, ItemName = "BarOne", ItemPrice = 5.00m, ItemQuantity = 10, Category = "Snack" }
+        };
         modelBuilder.Entity<Item>().HasData(items);
     }
-
-
 }
-
-
