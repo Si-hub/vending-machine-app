@@ -4,18 +4,18 @@ services:
     env: docker
     buildCommand: |
       # Build frontend
-      cd 1.VendingMachineApp.Client
+      cd VendingMachineApp.Client
       npm install
       npm run build:prod
       # Copy frontend build to backend wwwroot
-      mkdir -p ../2.Vending-Machine-App/wwwroot
-      cp -r dist/vending-machine-app.client/* ../2.Vending-Machine-App/wwwroot/
+      mkdir -p ../Vending-Machine-App/Vending-Machine-App/wwwroot
+      cp -r dist/vending-machine-app.client/* ../Vending-Machine-App/Vending-Machine-App/wwwroot/
       # Build backend
-      cd ../2.Vending-Machine-App
+      cd ../Vending-Machine-App
       dotnet publish -c Release -o out
-    startCommand: dotnet 4.Vending-Machine-App.dll
+    startCommand: dotnet Vending-Machine-App.dll
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
-      - key: ConnectionStrings__DefaultConnection  #Double Underscore is correct for Render
-        value: your_database_connection_string # set to your actual connection string
+      - key: ConnectionStrings__DefaultConnection
+        value: your_database_connection_string

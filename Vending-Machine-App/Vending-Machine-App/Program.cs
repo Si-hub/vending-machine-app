@@ -8,10 +8,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Get the connection string
+// Database configuration
 var connectionString = builder.Configuration.GetConnectionString("VendingConApp");
-
-// Modified database context configuration
 if (connectionString == "InMemory")
 {
     builder.Services.AddDbContext<VendingMachineDbContext>(options =>
@@ -23,41 +21,38 @@ else
         options.UseSqlServer(connectionString));
 }
 
-// Add CORS
+// CORS configuration
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-        });
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
 });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Use CORS
 app.UseCors("AllowAll");
 
-// Serve static files for Angular
-app.UseDefaultFiles();
-app.UseStaticFiles();
+// Serve static files (ensure index.html is in wwwroot)
+app.UseDefaultFiles(); // Looks for index.html by default
+app.UseStaticFiles();  // Serves files from wwwroot
 
 app.UseAuthorization();
-
 app.MapControllers();
 
-// For Angular routing
+// Handle client-side routing (e.g., Angular)
 app.MapFallbackToFile("index.html");
 
-// Render-specific port configuration
+// Render port configuration
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-app.Run($"http://0.0.0.0:{port}"); // Modified line
+app.Run($"http://0.0.0.0:{port}");

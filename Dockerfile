@@ -2,6 +2,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
+# Add this after the WORKDIR /app command in your Dockerfile
+RUN mkdir -p wwwroot
+
 # 1. Copy and restore .csproj first
 COPY ["Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj", "./"]
 RUN dotnet restore

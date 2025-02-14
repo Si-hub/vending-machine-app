@@ -24,7 +24,7 @@
               "html2canvas",
               "dompurify"
             ],
-            "outputPath": "dist/vending-machine-app.client",
+            "outputPath": "../Vending-Machine-App/Vending-Machine-App/wwwroot",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -54,13 +54,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "3mb",
-                  "maximumError": "5mb"
+                  "maximumWarning": "400kb",
+                  "maximumError": "500kb"
                 }
               ],
               "outputHashing": "all"
