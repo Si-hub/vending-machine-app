@@ -24,7 +24,7 @@
               "html2canvas",
               "dompurify"
             ],
-            "outputPath": "../Vending-Machine-App/Vending-Machine-App/wwwroot",
+            "outputPath": "dist/vending-machine-app.client",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
