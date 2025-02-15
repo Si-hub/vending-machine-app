@@ -2,22 +2,30 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-# Copy .csproj file using absolute path (Corrected and CRUCIAL)
-COPY ["Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj", "/app/Vending-Machine-App/Vending-Machine-App/"]
+# Copy all project files (including Angular project)
+COPY . .
 
 # Change directory to the folder containing the .csproj file
-WORKDIR /app/Vending-Machine-App/Vending-Machine-App
+WORKDIR /app/Vending-Machine-App
 
+# Restore .NET dependencies
 RUN dotnet restore
 
-# Change directory back to /app and copy all project files
+# Change directory back to the root of the app
 WORKDIR /app
-COPY . .
+
+# Build Angular application (INSIDE DOCKERFILE!)
+WORKDIR /app/VendingMachineApp.Client
+RUN npm install
+RUN npm run build:prod
+
+# Change directory back to the root of the app
+WORKDIR /app
 
 # Clean existing publish output (Important!)
 RUN rm -rf out
 
-# Publish to absolute path
+# Publish .NET application
 RUN dotnet publish Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj -c Release -o /app/out --no-restore
 
 # Runtime stage
@@ -27,7 +35,7 @@ WORKDIR /app
 # Create wwwroot (important!)
 RUN mkdir -p wwwroot
 
-# Copy published output and Angular files
+# Copy published output and Angular files (Corrected)
 COPY --from=build-env /app/out .
 COPY --from=build-env /app/VendingMachineApp.Client/dist/vending-machine-app.client/* /app/wwwroot/
 
