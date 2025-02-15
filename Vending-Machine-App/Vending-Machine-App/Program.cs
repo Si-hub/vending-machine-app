@@ -19,7 +19,7 @@ app.UseRouting(); // Enable routing - VERY IMPORTANT
 
 app.UseSpa(spa =>
 {
-    spa.Options.DefaultPage = "index.html"; // Serve index.html
+    spa.Options.DefaultPage = "/index.html"; // Serve index.html
 
     if (app.Environment.IsDevelopment())
     {
