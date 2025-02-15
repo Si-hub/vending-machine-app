@@ -14,7 +14,7 @@ services:
       # Go back to the root of the project to build the backend
       cd ../Vending-Machine-App  # VERY IMPORTANT!
       # Build backend
-      dotnet publish -c Release -o /app/out --no-restore # Match Dockerfile output path
+      dotnet publish Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj -c Release -o /app/out --no-restore # Match Dockerfile output path and .csproj path
     startCommand: dotnet Vending-Machine-App.dll
     envVars:
       - key: ASPNETCORE_ENVIRONMENT

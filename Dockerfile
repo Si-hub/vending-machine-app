@@ -2,23 +2,23 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-# Copy and restore .csproj first (Correct path - Nested structure)
-COPY ["Vending-Machine-App/Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj", "Vending-Machine-App/Vending-Machine-App/"] # Correct Path
+# Copy .csproj file (Correct path - Actual nested structure)
+COPY ["Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj", "Vending-Machine-App/"]
 
-# Change directory to the inner folder for dotnet restore
-WORKDIR /app/Vending-Machine-App/Vending-Machine-App
+# Change directory to the folder containing .csproj for dotnet restore
+WORKDIR /app/Vending-Machine-App
 
 RUN dotnet restore
 
-# Change directory back to app and Copy everything else (Correct Path)
+# Change directory back to /app and copy all project files
 WORKDIR /app
-COPY . ./
+COPY . .
 
-# Clean existing publish output
+# Clean existing publish output (Important!)
 RUN rm -rf out
 
 # Publish to absolute path (Correct Path)
-RUN dotnet publish Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj -c Release -o /app/out --no-restore # Corrected path
+RUN dotnet publish Vending-Machine-App/Vending-Machine-App.csproj -c Release -o /app/out --no-restore
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
