@@ -1,8 +1,9 @@
 # Build stage
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+FROM node:18-alpine AS build-env  # Use a Node.js base image
+
 WORKDIR /app
 
-# Copy all project files (including Angular project)
+# Copy all project files
 COPY . .
 
 # Change directory to the folder containing the .csproj file
@@ -14,7 +15,7 @@ RUN dotnet restore
 # Change directory back to the root of the app
 WORKDIR /app
 
-# Build Angular application (INSIDE DOCKERFILE!)
+# Build Angular application
 WORKDIR /app/VendingMachineApp.Client
 RUN npm install
 RUN npm run build:prod
@@ -28,14 +29,14 @@ RUN rm -rf out
 # Publish .NET application
 RUN dotnet publish Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj -c Release -o /app/out --no-restore
 
-# Runtime stage
+# Runtime stage (using .NET runtime image)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
 # Create wwwroot (important!)
 RUN mkdir -p wwwroot
 
-# Copy published output and Angular files (Corrected)
+# Copy published output and Angular files
 COPY --from=build-env /app/out .
 COPY --from=build-env /app/VendingMachineApp.Client/dist/vending-machine-app.client/* /app/wwwroot/
 
