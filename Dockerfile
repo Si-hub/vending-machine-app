@@ -19,7 +19,31 @@ RUN rm -rf out
 RUN dotnet publish -c Release -o /app/out --no-restore
 
 # Runtime stage
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+WORKDIR /app
+
+# Copy and restore .csproj first
+COPY ["Vending-Machine-App/Vending-Machine-App.csproj", "./"]
+RUN dotnet restore
+
+# Copy everything else
+COPY . ./
+
+# Clean existing publish output
+RUN rm -rf out
+
+# Publish to absolute path
+RUN dotnet publish -c Release -o /app/out --no-restore
+
+# Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
+
+# Create wwwroot (important!)
+RUN mkdir -p wwwroot
+
 COPY --from=build-env /app/out .
+COPY --from=build-env /app/VendingMachineApp.Client/dist/vending-machine-app.client/* /app/wwwroot/
+
 ENTRYPOINT ["dotnet", "Vending-Machine-App.dll"]
