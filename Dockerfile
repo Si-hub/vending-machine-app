@@ -1,5 +1,5 @@
-FROM node:18-alpine
-
+# Build stage (using .NET SDK image)
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
 # Copy all project files
@@ -14,7 +14,7 @@ RUN dotnet restore
 # Change directory back to the root of the app
 WORKDIR /app
 
-# Build Angular application
+# Build Angular application (in the same stage)
 WORKDIR /app/VendingMachineApp.Client
 RUN npm install
 RUN npm run build:prod
@@ -36,7 +36,7 @@ WORKDIR /app
 RUN mkdir -p wwwroot
 
 # Copy published output and Angular files
-COPY --from=0 /app/out .
-COPY --from=0 /app/VendingMachineApp.Client/dist/vending-machine-app.client/* /app/wwwroot/
+COPY --from=build-env /app/out .
+COPY --from=build-env /app/VendingMachineApp.Client/dist/vending-machine-app.client/* /app/wwwroot/
 
 ENTRYPOINT ["dotnet", "Vending-Machine-App.dll"]
