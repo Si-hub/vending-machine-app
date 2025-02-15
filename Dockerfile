@@ -1,5 +1,4 @@
-# Build stage
-FROM node:18-alpine AS build-env  # Use a Node.js base image
+FROM node:18-alpine  # Use a Node.js base image
 
 WORKDIR /app
 
@@ -37,7 +36,7 @@ WORKDIR /app
 RUN mkdir -p wwwroot
 
 # Copy published output and Angular files
-COPY --from=build-env /app/out .
-COPY --from=build-env /app/VendingMachineApp.Client/dist/vending-machine-app.client/* /app/wwwroot/
+COPY --from=0 /app/out .  # Copy the 'out' directory
+COPY --from=0 /app/VendingMachineApp.Client/dist/vending-machine-app.client/* /app/wwwroot/
 
 ENTRYPOINT ["dotnet", "Vending-Machine-App.dll"]
