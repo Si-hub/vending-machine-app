@@ -2,24 +2,22 @@ services:
   - type: web
     name: vending-machine-app
     env: docker
-    dockerfilePath: Dockerfile  # Add this if you have a Dockerfile
+    dockerfilePath: Dockerfile  # If you have a Dockerfile, keep this line
     buildCommand: |
       # Build frontend
       cd VendingMachineApp.Client
       npm install
       npm run build:prod
       # Copy frontend build to backend wwwroot
-      mkdir -p ../Vending-Machine-App/Vending-Machine-App/wwwroot  # Ensure directory exists
-      cp -r dist/vending-machine-app.client/* ../Vending-Machine-App/Vending-Machine-App/wwwroot  # Corrected path
+      mkdir -p ../Vending-Machine-App/Vending-Machine-App/wwwroot
+      cp -r dist/vending-machine-app.client/* ../Vending-Machine-App/Vending-Machine-App/wwwroot
       # Go back to the root of the project to build the backend
       cd ../Vending-Machine-App  # VERY IMPORTANT!
       # Build backend
-      dotnet publish -c Release -o out
+      dotnet publish -c Release -o /app/out --no-restore # Match Dockerfile output path
     startCommand: dotnet Vending-Machine-App.dll
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
-      # - key: ConnectionStrings__VendingConApp  # Uncomment and correct if needed later
-      #   value: your_database_connection_string
     ports:
-      - 8080 # Explicit port declaration, optional but good practice
+      - 8080
