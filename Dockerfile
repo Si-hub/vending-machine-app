@@ -1,5 +1,5 @@
-# Build stage (using a Node.js image)
-FROM node:18-alpine AS build-env
+# Build stage (for both .NET and Angular)
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
 # Copy all project files
@@ -13,6 +13,9 @@ RUN dotnet restore
 
 # Change directory back to the root of the app
 WORKDIR /app
+
+# Install Node.js and npm (in the same stage)
+RUN apt-get update && apt-get install -y nodejs npm
 
 # Build Angular application
 WORKDIR /app/VendingMachineApp.Client
@@ -35,7 +38,7 @@ WORKDIR /app
 # Create wwwroot (important!)
 RUN mkdir -p wwwroot
 
-# Copy published output and Angular files (Corrected)
+# Copy published output and Angular files
 COPY --from=build-env /app/out .
 COPY --from=build-env /app/VendingMachineApp.Client/dist/vending-machine-app.client/* /app/wwwroot/
 
