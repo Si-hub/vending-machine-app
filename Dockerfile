@@ -1,20 +1,14 @@
-# Build stage (for both .NET and Angular)
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
 # Copy all project files
 COPY . .
 
-# Change directory to the folder containing the .csproj file
-WORKDIR /app/Vending-Machine-App
+# Restore .NET dependencies with the correct path
+RUN dotnet restore "/app/Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj"
 
-# Restore .NET dependencies
-RUN dotnet restore
-
-# Change directory back to the root of the app
-WORKDIR /app
-
-# Install Node.js and npm (in the same stage)
+# Install Node.js and npm
 RUN apt-get update && apt-get install -y nodejs npm
 
 # Build Angular application
@@ -22,24 +16,21 @@ WORKDIR /app/VendingMachineApp.Client
 RUN npm install
 RUN npm run build:prod
 
-# Change directory back to the root of the app
+# Publish .NET application with correct path
 WORKDIR /app
+RUN dotnet publish "/app/Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj" -c Release -o /app/out
 
-# Clean existing publish output (Important!)
-RUN rm -rf out
-
-# Publish .NET application
-RUN dotnet publish Vending-Machine-App/Vending-Machine-App.csproj -c Release -o /app/out --no-restore
-
-# Runtime stage (using .NET runtime image)
+# Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
-# Create wwwroot (important!)
+# Create wwwroot directory
 RUN mkdir -p wwwroot
 
-# Copy published output and Angular files
+# Copy published output
 COPY --from=build-env /app/out .
+
+# Copy Angular files
 COPY --from=build-env /app/VendingMachineApp.Client/dist/vending-machine-app.client/* /app/wwwroot/
 
 ENTRYPOINT ["dotnet", "Vending-Machine-App.dll"]
