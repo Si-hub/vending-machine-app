@@ -8,7 +8,7 @@ COPY . .
 # Restore .NET dependencies with the correct path
 RUN dotnet restore "/app/Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj"
 
-# Install Entity Framework Core Tools (NEW!)
+# Install Entity Framework Core Tools
 RUN dotnet tool install --global dotnet-ef
 
 # Install Node.js and npm
@@ -24,7 +24,7 @@ WORKDIR /app
 RUN dotnet publish "/app/Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj" -c Release -o /app/out
 
 # Apply database migrations (NEW!)
-WORKDIR /app/Vending-Machine-App/Vending-Machine-App  # Change to the project directory
+WORKDIR /app/Vending-Machine-App/Vending-Machine-App  # CORRECT WORKDIR - MUST MATCH .csproj LOCATION
 RUN dotnet ef database update --connection "$ConnectionStrings__VendingConApp"
 
 # Runtime stage
