@@ -5,9 +5,9 @@ WORKDIR /app
 # Copy all project files
 COPY . .
 
-# Install Entity Framework Core Tools
+# Install Entity Framework Core Tools (without comment in same line)
 RUN dotnet tool install --global dotnet-ef
-ENV PATH="$PATH:/root/.dotnet/tools"  # Add this line to update PATH
+ENV PATH="/root/.dotnet/tools:${PATH}"
 
 # Restore .NET dependencies
 RUN dotnet restore "/app/Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj"
