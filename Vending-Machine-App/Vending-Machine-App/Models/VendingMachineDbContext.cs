@@ -34,6 +34,7 @@ public partial class VendingMachineDbContext : DbContext
 
             entity.Property(e => e.ItemName)
                 .HasMaxLength(255)
+                .HasColumnType("varchar")  // Changed from nvarchar
                 .HasColumnName("item_name");
 
             entity.Property(e => e.ItemPrice)
@@ -45,6 +46,7 @@ public partial class VendingMachineDbContext : DbContext
 
             entity.Property(e => e.Category)
                 .HasMaxLength(255)
+                .HasColumnType("varchar")  // Changed from nvarchar
                 .HasColumnName("category");
         });
 
@@ -70,6 +72,7 @@ public partial class VendingMachineDbContext : DbContext
 
             entity.Property(e => e.ItemName)
                 .HasMaxLength(255)
+                .HasColumnType("varchar")  // Changed from nvarchar
                 .HasColumnName("item_name");
 
             entity.Property(e => e.PurchaseDate)

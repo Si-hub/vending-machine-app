@@ -2,8 +2,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Vending_Machine_App.Models;
 
 #nullable disable
@@ -18,27 +18,28 @@ namespace Vending_Machine_App.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.11")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Vending_Machine_App.Models.Item", b =>
                 {
                     b.Property<int>("ItemId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("item_id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ItemId"));
 
                     b.Property<string>("Category")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar")
+                        .HasColumnName("category");
 
                     b.Property<string>("ItemName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("varchar")
                         .HasColumnName("item_name");
 
                     b.Property<decimal?>("ItemPrice")
@@ -46,11 +47,10 @@ namespace Vending_Machine_App.Migrations
                         .HasColumnName("item_price");
 
                     b.Property<int?>("ItemQuantity")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("item_quantity");
 
-                    b.HasKey("ItemId")
-                        .HasName("PK__items__52020FDD8B472EAF");
+                    b.HasKey("ItemId");
 
                     b.ToTable("items", (string)null);
 
@@ -133,10 +133,10 @@ namespace Vending_Machine_App.Migrations
                 {
                     b.Property<int>("PurchaseId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("purchase_id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PurchaseId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PurchaseId"));
 
                     b.Property<decimal>("AmountPaid")
                         .HasColumnType("decimal(10, 2)")
@@ -147,22 +147,20 @@ namespace Vending_Machine_App.Migrations
                         .HasColumnName("change");
 
                     b.Property<int>("ItemId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("item_id");
 
                     b.Property<string>("ItemName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("varchar")
                         .HasColumnName("item_name");
 
                     b.Property<DateTime>("PurchaseDate")
-                        .HasColumnType("datetime")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("purchase_date");
 
-                    b.HasKey("PurchaseId")
-                        .HasName("PK__purchase__87071CB95534AE18");
+                    b.HasKey("PurchaseId");
 
                     b.HasIndex("ItemId");
 
@@ -175,7 +173,7 @@ namespace Vending_Machine_App.Migrations
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .IsRequired()
-                        .HasConstraintName("FK_purchases_items");
+                        .HasConstraintName("fk_purchases_items");
 
                     b.Navigation("Item");
                 });
