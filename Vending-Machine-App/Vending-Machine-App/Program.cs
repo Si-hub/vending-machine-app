@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Vending_Machine_App.Models;
-using Microsoft.AspNetCore.SpaServices.Extensions; // Add this using statement
+using Microsoft.AspNetCore.SpaServices.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Database configuration (KEEP THIS SECTION AS IS)
+// Database configuration
 var connectionString = builder.Configuration.GetConnectionString("VendingConApp");
 if (connectionString == "InMemory")
 {
@@ -19,10 +19,10 @@ if (connectionString == "InMemory")
 else
 {
     builder.Services.AddDbContext<VendingMachineDbContext>(options =>
-        options.UseSqlServer(connectionString));
+        options.UseNpgsql(connectionString)); // Changed to UseNpgsql
 }
 
-// CORS configuration (KEEP THIS SECTION AS IS)
+// CORS configuration
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -33,10 +33,16 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Add CORS services (THIS IS THE FIX FOR THE ICorsService ERROR)
-builder.Services.AddCors(); // Add this line
+builder.Services.AddCors();
 
 var app = builder.Build();
+
+// Apply migrations at startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<VendingMachineDbContext>();
+    db.Database.Migrate();
+}
 
 // Middleware pipeline
 if (app.Environment.IsDevelopment())
@@ -45,19 +51,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowAll"); // Use CORS policy
-
+app.UseCors("AllowAll");
 app.UseStaticFiles();
-
-app.UseRouting(); // Important: Add this line for routing to work
+app.UseRouting();
 
 app.UseSpa(spa =>
 {
-    spa.Options.DefaultPage = "/index.html"; // Correct path (leading slash)
-
+    spa.Options.DefaultPage = "/index.html";
     if (app.Environment.IsDevelopment())
     {
-        spa.UseProxyToSpaDevelopmentServer("http://localhost:4200"); // Development only!
+        spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
     }
 });
 

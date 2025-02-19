@@ -5,39 +5,18 @@ WORKDIR /app
 # Copy all project files
 COPY . .
 
-# Restore .NET dependencies with the correct path
-RUN dotnet restore "/app/Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj"
-
 # Install Entity Framework Core Tools
 RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"  # Add this line to update PATH
 
-# Install Node.js and npm
-RUN apt-get update && apt-get install -y nodejs npm
+# Restore .NET dependencies
+RUN dotnet restore "/app/Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj"
 
-# Build Angular application
-WORKDIR /app/VendingMachineApp.Client
-RUN npm install
-RUN npm run build:prod
-
-# Publish .NET application with correct path
-WORKDIR /app
+# Build and publish .NET application
 RUN dotnet publish "/app/Vending-Machine-App/Vending-Machine-App/Vending-Machine-App.csproj" -c Release -o /app/out
-
-# Apply database migrations (NEW!)
-WORKDIR /app/Vending-Machine-App/Vending-Machine-App  # CORRECT WORKDIR - MUST MATCH .csproj LOCATION
-RUN dotnet ef database update --connection "$ConnectionStrings__VendingConApp"
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-
-# Create wwwroot directory
-RUN mkdir -p wwwroot
-
-# Copy published output
 COPY --from=build-env /app/out .
-
-# Copy Angular files
-COPY --from=build-env /app/VendingMachineApp.Client/dist/vending-machine-app.client/* /app/wwwroot/
-
 ENTRYPOINT ["dotnet", "Vending-Machine-App.dll"]
